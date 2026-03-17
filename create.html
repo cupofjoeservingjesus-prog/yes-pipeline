@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YES! — Create Your Video</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;0,700;1,600&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+--ink:#08070A;--card:#131019;--accent:#E8C547;--accent2:#F5D76E;
+--offwhite:#F2EEE8;--muted:#6B6578;--muted2:#9B94A8;
+--border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.12);
+--font-d:'Cormorant Garamond',Georgia,serif;--font-b:'Outfit',sans-serif;
+--green:#4CC98A;--red:#E05C6A;
+}
+body{background:var(--ink);color:var(--offwhite);font-family:var(--font-b);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+body::before{content:'';position:fixed;top:-200px;left:50%;transform:translateX(-50%);width:700px;height:700px;background:radial-gradient(circle,rgba(232,197,71,0.07) 0%,transparent 70%);pointer-events:none;z-index:0;animation:glow 6s ease-in-out infinite;}
+@keyframes glow{0%,100%{transform:translateX(-50%) scale(1);opacity:0.7}50%{transform:translateX(-50%) scale(1.15);opacity:1}}
+@keyframes riseIn{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
+@keyframes spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;background:linear-gradient(to bottom,rgba(8,7,10,0.97),transparent);}
+.logo{font-family:var(--font-d);font-size:28px;font-weight:700;color:var(--accent);letter-spacing:-1px;text-decoration:none;text-shadow:0 0 40px rgba(232,197,71,0.5);}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.back-btn{background:transparent;color:var(--muted2);border:1px solid var(--border2);padding:10px 20px;border-radius:100px;font-family:var(--font-b);font-size:13px;font-weight:500;cursor:pointer;text-decoration:none;transition:all 0.25s;}
+.back-btn:hover{color:var(--accent);border-color:rgba(232,197,71,0.4);}
+.credits-badge{background:rgba(76,201,138,0.08);border:1px solid rgba(76,201,138,0.25);border-radius:100px;padding:8px 14px;font-size:12px;font-weight:700;color:var(--green);display:none;}
+.credits-badge.low{background:rgba(224,92,106,0.08);border-color:rgba(224,92,106,0.25);color:var(--red);}
+.user-btn{background:rgba(232,197,71,0.08);border:1px solid rgba(232,197,71,0.2);border-radius:100px;padding:8px 14px;font-size:12px;font-weight:600;color:var(--accent);cursor:pointer;display:none;font-family:var(--font-b);}
+.modal-overlay{position:fixed;inset:0;background:rgba(8,7,10,0.93);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(12px);}
+.modal-overlay.hidden{display:none;}
+.modal{background:var(--card);border:1px solid var(--border2);border-radius:28px;padding:36px 28px;max-width:420px;width:100%;animation:riseIn 0.4s ease;position:relative;overflow:hidden;}
+.modal::before{content:'';position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.modal-logo{font-family:var(--font-d);font-size:42px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:4px;text-shadow:0 0 40px rgba(232,197,71,0.5);}
+.modal-tagline{font-size:13px;color:var(--muted2);text-align:center;margin-bottom:28px;font-weight:300;}
+.modal-title{font-family:var(--font-d);font-size:26px;font-weight:600;color:var(--offwhite);margin-bottom:6px;}
+.modal-sub{font-size:14px;color:var(--muted2);font-weight:300;margin-bottom:24px;line-height:1.6;}
+.free-badge{background:rgba(76,201,138,0.1);border:1px solid rgba(76,201,138,0.3);border-radius:12px;padding:12px 16px;margin-bottom:24px;display:flex;align-items:center;gap:10px;}
+.free-badge-text{font-size:13px;color:var(--green);font-weight:600;}
+.auth-input{width:100%;background:rgba(255,255,255,0.04);border:1px solid var(--border2);border-radius:14px;padding:16px 18px;color:var(--offwhite);font-family:var(--font-b);font-size:15px;outline:none;transition:border 0.3s;margin-bottom:12px;}
+.auth-input:focus{border-color:rgba(232,197,71,0.5);}
+.auth-input::placeholder{color:var(--muted);}
+.auth-btn{width:100%;background:var(--accent);color:var(--ink);border:none;padding:18px;border-radius:14px;font-family:var(--font-b);font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;margin-bottom:12px;}
+.auth-btn:hover{transform:translateY(-2px);}
+.auth-switch{text-align:center;font-size:14px;color:var(--muted2);}
+.auth-switch a{color:var(--accent);cursor:pointer;font-weight:600;}
+.auth-error{background:rgba(224,92,106,0.1);border:1px solid rgba(224,92,106,0.3);border-radius:10px;padding:12px 16px;font-size:13px;color:var(--red);margin-bottom:12px;display:none;}
+.auth-error.show{display:block;}
+.paywall-modal{background:var(--card);border:1px solid rgba(232,197,71,0.3);border-radius:28px;padding:36px 28px;max-width:420px;width:100%;animation:riseIn 0.4s ease;position:relative;overflow:hidden;text-align:center;}
+.paywall-modal::before{content:'';position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.paywall-icon{font-size:52px;margin-bottom:16px;}
+.paywall-title{font-family:var(--font-d);font-size:32px;font-weight:600;color:var(--offwhite);margin-bottom:8px;}
+.paywall-sub{font-size:15px;color:var(--muted2);font-weight:300;margin-bottom:28px;line-height:1.6;}
+.plan-card{background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:18px;padding:20px;margin-bottom:12px;cursor:pointer;transition:all 0.25s;text-align:left;}
+.plan-card:hover,.plan-card.selected{border-color:var(--accent);background:rgba(232,197,71,0.06);}
+.plan-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}
+.plan-name{font-size:16px;font-weight:700;color:var(--offwhite);}
+.plan-price{font-family:var(--font-d);font-size:22px;font-weight:700;color:var(--accent);}
+.plan-price span{font-size:13px;font-weight:400;color:var(--muted2);}
+.plan-desc{font-size:13px;color:var(--muted2);font-weight:300;}
+.paywall-btn{width:100%;background:var(--accent);color:var(--ink);border:none;padding:18px;border-radius:14px;font-family:var(--font-b);font-size:16px;font-weight:700;cursor:pointer;transition:all 0.3s;margin-top:8px;}
+.paywall-btn:hover{transform:translateY(-2px);}
+.paywall-skip{font-size:13px;color:var(--muted);margin-top:14px;cursor:pointer;}
+.wrap{max-width:680px;margin:0 auto;padding:110px 24px 80px;position:relative;z-index:10;}
+.page-tag{font-size:10px;font-weight:600;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+.page-tag::before{content:'';width:18px;height:1px;background:var(--accent);}
+.page-title{font-family:var(--font-d);font-size:clamp(38px,10vw,64px);font-weight:300;line-height:1.0;letter-spacing:-2px;margin-bottom:12px;animation:riseIn 0.8s ease both;}
+.page-title em{font-style:italic;font-weight:600;color:var(--accent);}
+.page-sub{font-size:16px;color:var(--muted2);font-weight:300;line-height:1.7;margin-bottom:48px;animation:riseIn 0.8s 0.1s ease both;}
+.videos-left-bar{background:rgba(232,197,71,0.06);border:1px solid rgba(232,197,71,0.15);border-radius:16px;padding:16px 20px;margin-bottom:24px;display:flex;align-items:center;justify-content:space-between;}
+.videos-left-text{font-size:13px;color:var(--muted2);}
+.videos-left-text strong{color:var(--accent);font-weight:700;}
+.videos-left-dots{display:flex;gap:6px;}
+.vdot{width:10px;height:10px;border-radius:50%;background:var(--accent);}
+.vdot.used{background:rgba(255,255,255,0.1);}
+.steps-bar{display:flex;align-items:center;gap:0;margin-bottom:48px;animation:riseIn 0.8s 0.2s ease both;}
+.step-dot{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:all 0.3s;}
+.step-dot.active{background:var(--accent);color:var(--ink);}
+.step-dot.done{background:var(--green);color:var(--ink);}
+.step-dot.inactive{background:rgba(255,255,255,0.06);color:var(--muted);border:1px solid var(--border2);}
+.step-line{flex:1;height:1px;background:var(--border2);}
+.step-line.done{background:var(--green);}
+.card{background:var(--card);border:1px solid var(--border);border-radius:24px;padding:28px 24px;margin-bottom:20px;position:relative;overflow:hidden;animation:riseIn 0.8s 0.3s ease both;}
+.card::before{content:'';position:absolute;top:0;left:24px;right:24px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.card-label{font-size:11px;font-weight:600;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.card-title{font-family:var(--font-d);font-size:22px;font-weight:600;color:var(--offwhite);margin-bottom:8px;}
+.card-sub{font-size:14px;color:var(--muted2);font-weight:300;line-height:1.6;margin-bottom:20px;}
+.type-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+.type-btn{background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:14px;padding:14px 12px;cursor:pointer;transition:all 0.25s;text-align:center;}
+.type-btn:hover{border-color:rgba(232,197,71,0.3);}
+.type-btn.selected{border-color:var(--accent);background:rgba(232,197,71,0.08);}
+.type-btn .t-icon{font-size:22px;margin-bottom:6px;}
+.type-btn .t-name{font-size:13px;font-weight:600;color:var(--offwhite);}
+.story-input{width:100%;background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:14px;padding:16px 18px;color:var(--offwhite);font-family:var(--font-b);font-size:16px;line-height:1.7;resize:none;outline:none;min-height:120px;transition:border 0.3s;}
+.story-input:focus{border-color:rgba(232,197,71,0.4);}
+.story-input::placeholder{color:var(--muted);}
+.char-count{text-align:right;font-size:12px;color:var(--muted);margin-top:8px;}
+.style-grid{display:flex;flex-direction:column;gap:10px;}
+.style-btn{background:rgba(255,255,255,0.03);border:1px solid var(--border2);border-radius:14px;padding:16px 18px;cursor:pointer;transition:all 0.25s;display:flex;align-items:center;gap:14px;}
+.style-btn:hover{border-color:rgba(232,197,71,0.3);}
+.style-btn.selected{border-color:var(--accent);background:rgba(232,197,71,0.06);}
+.style-icon{font-size:22px;width:44px;height:44px;background:rgba(255,255,255,0.04);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.style-info h4{font-size:15px;font-weight:600;color:var(--offwhite);margin-bottom:3px;}
+.style-info p{font-size:13px;color:var(--muted);font-weight:300;}
+.style-check{margin-left:auto;color:var(--accent);font-size:18px;opacity:0;transition:opacity 0.2s;}
+.style-btn.selected .style-check{opacity:1;}
+.generate-btn{width:100%;background:var(--accent);color:var(--ink);border:none;padding:20px;border-radius:16px;font-family:var(--font-b);font-size:17px;font-weight:700;cursor:pointer;transition:all 0.3s;box-shadow:0 8px 32px rgba(232,197,71,0.2);margin-top:8px;}
+.generate-btn:hover{transform:translateY(-2px);box-shadow:0 16px 48px rgba(232,197,71,0.35);}
+.progress-card{display:none;background:var(--card);border:1px solid rgba(232,197,71,0.2);border-radius:24px;padding:36px 24px;text-align:center;margin-bottom:20px;}
+.progress-card.show{display:block;animation:riseIn 0.5s ease;}
+.progress-icon{font-size:48px;margin-bottom:16px;display:inline-block;animation:spin 3s linear infinite;}
+.progress-title{font-family:var(--font-d);font-size:28px;font-weight:600;color:var(--offwhite);margin-bottom:8px;}
+.progress-sub{font-size:14px;color:var(--muted2);font-weight:300;margin-bottom:24px;}
+.progress-bar-wrap{background:rgba(255,255,255,0.06);border-radius:100px;height:6px;overflow:hidden;margin-bottom:12px;}
+.progress-bar{height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2));border-radius:100px;width:0%;transition:width 0.5s ease;}
+.progress-status{font-size:12px;color:var(--muted);letter-spacing:1.5px;text-transform:uppercase;}
+.result-card{display:none;background:var(--card);border:1px solid rgba(76,201,138,0.3);border-radius:24px;padding:28px 24px;margin-bottom:20px;}
+.result-card.show{display:block;animation:riseIn 0.5s ease;}
+.result-success{display:flex;align-items:center;gap:12px;margin-bottom:20px;}
+.result-success-icon{width:40px;height:40px;background:rgba(76,201,138,0.15);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;}
+.result-success h3{font-family:var(--font-d);font-size:22px;font-weight:600;color:var(--offwhite);}
+.result-success p{font-size:13px;color:var(--green);font-weight:500;}
+.video-screen{width:100%;aspect-ratio:9/16;background:#000;border-radius:16px;overflow:hidden;margin-bottom:20px;max-height:420px;}
+.video-screen video{width:100%;height:100%;object-fit:cover;}
+.action-btns{display:flex;flex-direction:column;gap:10px;}
+.action-btn{width:100%;padding:16px;border-radius:14px;font-family:var(--font-b);font-size:15px;font-weight:600;cursor:pointer;transition:all 0.3s;border:none;}
+.action-btn-gold{background:var(--accent);color:var(--ink);}
+.action-btn-gold:hover{transform:translateY(-2px);}
+.action-btn-ghost{background:transparent;color:var(--offwhite);border:1px solid var(--border2);}
+.action-btn-ghost:hover{border-color:rgba(232,197,71,0.4);color:var(--accent);}
+.error-card{display:none;background:rgba(224,92,106,0.08);border:1px solid rgba(224,92,106,0.3);border-radius:16px;padding:20px 24px;margin-bottom:20px;}
+.error-card.show{display:block;animation:riseIn 0.4s ease;}
+.error-card p{font-size:14px;color:var(--red);margin:0;font-weight:500;}
+.toast{position:fixed;bottom:30px;left:50%;transform:translateX(-50%);background:var(--accent);color:var(--ink);padding:14px 28px;border-radius:100px;font-size:14px;font-weight:700;z-index:9999;display:none;white-space:nowrap;}
+.toast.show{display:block;animation:riseIn 0.3s ease;}
+</style>
+</head>
+<body>
+<div class="toast" id="toast"></div>
+<div class="modal-overlay" id="auth-modal">
+  <div class="modal">
+    <div class="modal-logo">YES!</div>
+    <div class="modal-tagline">Every life has a story worth telling</div>
+    <div id="auth-login-view">
+      <div class="modal-title">Welcome back</div>
+      <div class="modal-sub">Sign in to create your cinematic video.</div>
+      <div class="auth-error" id="auth-error"></div>
+      <input class="auth-input" type="email" id="login-email" placeholder="Your email address">
+      <input class="auth-input" type="password" id="login-password" placeholder="Your password">
+      <button class="auth-btn" onclick="signIn()">Sign In →</button>
+      <div class="auth-switch">No account? <a onclick="showSignup()">Create one free</a></div>
+    </div>
+    <div id="auth-signup-view" style="display:none;">
+      <div class="modal-title">Start your story</div>
+      <div class="modal-sub">Create your free account and get 3 videos on us.</div>
+      <div class="free-badge">
+        <div style="font-size:20px;">🎬</div>
+        <div class="free-badge-text">3 FREE videos — no card needed</div>
+      </div>
+      <div class="auth-error" id="signup-error"></div>
+      <input class="auth-input" type="email" id="signup-email" placeholder="Your email address">
+      <input class="auth-input" type="password" id="signup-password" placeholder="Create a password (6+ characters)">
+      <button class="auth-btn" onclick="signUp()">Create Free Account →</button>
+      <div class="auth-switch">Already have one? <a onclick="showLogin()">Sign in</a></div>
+    </div>
+    <div id="auth-verify-view" style="display:none;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📬</div>
+      <div class="modal-title" style="text-align:center;">Check your email!</div>
+      <div class="modal-sub" style="text-align:center;">We sent you a confirmation link. Click it then come back!</div>
+    </div>
+  </div>
+</div>
+<div class="modal-overlay hidden" id="paywall-modal">
+  <div class="paywall-modal">
+    <div class="paywall-icon">✦</div>
+    <div class="paywall-title">Ready to keep creating?</div>
+    <div class="paywall-sub">Your 3 free videos are used. Choose a plan to continue.</div>
+    <div class="plan-card selected" id="plan-starter" onclick="selectPlan('starter')">
+      <div class="plan-top"><div class="plan-name">🌱 Starter</div><div class="plan-price">$9.99<span>/mo CAD</span></div></div>
+      <div class="plan-desc">5 videos per month</div>
+    </div>
+    <div class="plan-card" id="plan-creator" onclick="selectPlan('creator')">
+      <div class="plan-top"><div class="plan-name">🎬 Creator</div><div class="plan-price">$29.99<span>/mo CAD</span></div></div>
+      <div class="plan-desc">20 videos per month</div>
+    </div>
+    <div class="plan-card" id="plan-pro" onclick="selectPlan('pro')">
+      <div class="plan-top"><div class="plan-name">🔥 Pro</div><div class="plan-price">$59.99<span>/mo CAD</span></div></div>
+      <div class="plan-desc">Unlimited videos</div>
+    </div>
+    <button class="paywall-btn" onclick="goToPay()">Continue to Payment →</button>
+    <div class="paywall-skip" onclick="closePaywall()">Maybe later</div>
+  </div>
+</div>
+<nav>
+  <a class="logo" href="index.html">YES!</a>
+  <div class="nav-right">
+    <div class="credits-badge" id="credits-badge"></div>
+    <button class="user-btn" id="user-btn" onclick="signOut()">Sign Out</button>
+    <a class="back-btn" href="index.html">← Home</a>
+  </div>
+</nav>
+<div class="wrap">
+  <div class="page-tag">Story Engine</div>
+  <h1 class="page-title">Create your<br><em>cinematic video.</em></h1>
+  <p class="page-sub">Tell us your story. YES! will turn it into a powerful film in minutes.</p>
+  <div class="videos-left-bar" id="videos-left-bar" style="display:none;">
+    <div class="videos-left-text">Free videos remaining: <strong id="videos-left-num">3</strong></div>
+    <div class="videos-left-dots">
+      <div class="vdot" id="vdot1"></div>
+      <div class="vdot" id="vdot2"></div>
+      <div class="vdot" id="vdot3"></div>
+    </div>
+  </div>
+  <div class="steps-bar">
+    <div class="step-dot active" id="dot1">1</div>
+    <div class="step-line" id="line1"></div>
+    <div class="step-dot inactive" id="dot2">2</div>
+    <div class="step-line" id="line2"></div>
+    <div class="step-dot inactive" id="dot3">3</div>
+  </div>
+  <div class="card" id="step1">
+    <div class="card-label">Step 1 of 3</div>
+    <div class="card-title">What kind of story is this?</div>
+    <div class="card-sub">Choose the category that best fits your story.</div>
+    <div class="type-grid">
+      <div class="type-btn" onclick="selectType(this,'Personal Story')"><div class="t-icon">💪</div><div class="t-name">Personal Story</div></div>
+      <div class="type-btn" onclick="selectType(this,'Faith & Spiritual')"><div class="t-icon">🙏</div><div class="t-name">Faith & Spiritual</div></div>
+      <div class="type-btn" onclick="selectType(this,'Overcoming Hardship')"><div class="t-icon">🔥</div><div class="t-name">Overcoming</div></div>
+      <div class="type-btn" onclick="selectType(this,'Motivation')"><div class="t-icon">🚀</div><div class="t-name">Motivation</div></div>
+      <div class="type-btn" onclick="selectType(this,'Family Memory')"><div class="t-icon">👨‍👩‍👧</div><div class="t-name">Family Memory</div></div>
+      <div class="type-btn" onclick="selectType(this,'Business Story')"><div class="t-icon">💼</div><div class="t-name">Business</div></div>
+      <div class="type-btn" onclick="selectType(this,'Life Lesson')"><div class="t-icon">🎓</div><div class="t-name">Life Lesson</div></div>
+      <div class="type-btn" onclick="selectType(this,'Documentary')"><div class="t-icon">🎬</div><div class="t-name">Documentary</div></div>
+    </div>
+    <button class="generate-btn" onclick="goToStep2()">Continue →</button>
+  </div>
+  <div class="card" id="step2" style="display:none;">
+    <div class="card-label">Step 2 of 3</div>
+    <div class="card-title">Tell us your story</div>
+    <div class="card-sub">Write your story in your own words. The more detail the more powerful your video.</div>
+    <textarea class="story-input" id="story-text" placeholder="e.g. Three years ago I lost everything — my job, my home, my confidence. Then one day I made a decision that changed everything..." maxlength="500" oninput="updateCount()"></textarea>
+    <div class="char-count"><span id="char-num">0</span>/500</div>
+    <button class="generate-btn" onclick="goToStep3()" style="margin-top:16px;">Continue →</button>
+  </div>
+  <div class="card" id="step3" style="display:none;">
+    <div class="card-label">Step 3 of 3</div>
+    <div class="card-title">Choose your video style</div>
+    <div class="card-sub">How do you want your story to feel?</div>
+    <div class="style-grid">
+      <div class="style-btn" onclick="selectStyle(this,'cinematic')"><div class="style-icon">🎬</div><div class="style-info"><h4>Cinematic</h4><p>Epic, dramatic, film-quality visuals</p></div><div class="style-check">✓</div></div>
+      <div class="style-btn" onclick="selectStyle(this,'emotional')"><div class="style-icon">💛</div><div class="style-info"><h4>Emotional</h4><p>Warm, heartfelt, deeply moving</p></div><div class="style-check">✓</div></div>
+      <div class="style-btn" onclick="selectStyle(this,'powerful')"><div class="style-icon">⚡</div><div class="style-info"><h4>Powerful</h4><p>Bold, energetic, motivational</p></div><div class="style-check">✓</div></div>
+      <div class="style-btn" onclick="selectStyle(this,'peaceful')"><div class="style-icon">🌅</div><div class="style-info"><h4>Peaceful</h4><p>Calm, gentle, reflective</p></div><div class="style-check">✓</div></div>
+    </div>
+    <button class="generate-btn" onclick="generateVideo()" style="margin-top:20px;">✦ Generate My Video</button>
+  </div>
+  <div class="progress-card" id="progress-card">
+    <div class="progress-icon">🎬</div>
+    <div class="progress-title">Building your film...</div>
+    <div class="progress-sub" id="progress-sub">Your story is being transformed into a cinematic experience</div>
+    <div class="progress-bar-wrap"><div class="progress-bar" id="progress-bar"></div></div>
+    <div class="progress-status" id="progress-status">Initializing...</div>
+  </div>
+  <div class="error-card" id="error-card"><p id="error-msg">Something went wrong. Please try again.</p></div>
+  <div class="result-card" id="result-card">
+    <div class="result-success">
+      <div class="result-success-icon">✓</div>
+      <div><h3>Your film is ready!</h3><p>✦ Video generated successfully</p></div>
+    </div>
+    <div class="video-screen" id="video-screen"></div>
+    <div class="action-btns">
+      <button class="action-btn action-btn-gold" onclick="shareVideo()">✦ Share My Story</button>
+      <button class="action-btn action-btn-ghost" onclick="resetForm()">Create Another Video</button>
+    </div>
+  </div>
+</div>
+<script>
+const SUPABASE_URL='https://gaqxxnpbdyuhqnuymwvx.supabase.co';
+const SUPABASE_ANON='sb_publishable_9Re17X2fK5AX9aSdN8KAJg_-A24dYj_';
+const EDGE_URL=SUPABASE_URL+'/functions/v1/generate-video';
+const FREE_VIDEOS=3;
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_ANON);
+let currentUser=null,userCredits=0,selectedPlan='starter',selectedType='',selectedStyle='';
+sb.auth.onAuthStateChange(async(event,session)=>{
+if(session?.user){currentUser=session.user;await loadUserCredits();document.getElementById('auth-modal').classList.add('hidden');document.getElementById('user-btn').style.display='block';}
+else{currentUser=null;document.getElementById('auth-modal').classList.remove('hidden');document.getElementById('credits-badge').style.display='none';document.getElementById('user-btn').style.display='none';document.getElementById('videos-left-bar').style.display='none';}
+});
+async function loadUserCredits(){
+const{data}=await sb.from('user_credits').select('*').eq('user_id',currentUser.id).single();
+if(data){userCredits=data.videos_remaining;}
+else{await sb.from('user_credits').insert({user_id:currentUser.id,videos_remaining:FREE_VIDEOS,plan:'free'});userCredits=FREE_VIDEOS;}
+updateCreditsUI();
+}
+function updateCreditsUI(){
+const badge=document.getElementById('credits-badge');
+const num=document.getElementById('videos-left-num');
+badge.style.display='block';
+document.getElementById('videos-left-bar').style.display='flex';
+num.innerText=userCredits;
+if(userCredits<=1){badge.classList.add('low');badge.innerText='⚠️ '+userCredits+' video left';}
+else{badge.classList.remove('low');badge.innerText='🎬 '+userCredits+' videos left';}
+['vdot1','vdot2','vdot3'].forEach((id,i)=>{const dot=document.getElementById(id);if(dot)dot.className='vdot'+(i>=userCredits?' used':'');});
+}
+function showLogin(){document.getElementById('auth-login-view').style.display='block';document.getElementById('auth-signup-view').style.display='none';document.getElementById('auth-verify-view').style.display='none';}
+function showSignup(){document.getElementById('auth-login-view').style.display='none';document.getElementById('auth-signup-view').style.display='block';document.getElementById('auth-verify-view').style.display='none';}
+async function signIn(){
+const email=document.getElementById('login-email').value.trim();
+const password=document.getElementById('login-password').value;
+const err=document.getElementById('auth-error');
+err.classList.remove('show');
+if(!email||!password){err.innerText='Please enter your email and password.';err.classList.add('show');return;}
+const{error}=await sb.auth.signInWithPassword({email,password});
+if(error){err.innerText=error.message;err.classList.add('show');}
+}
+async function signUp(){
+const email=document.getElementById('signup-email').value.trim();
+const password=document.getElementById('signup-password').value;
+const err=document.getElementById('signup-error');
+err.classList.remove('show');
+if(!email||!password){err.innerText='Please enter your email and password.';err.classList.add('show');return;}
+if(password.length<6){err.innerText='Password must be at least 6 characters.';err.classList.add('show');return;}
+const{error}=await sb.auth.signUp({email,password});
+if(error){err.innerText=error.message;err.classList.add('show');}
+else{document.getElementById('auth-signup-view').style.display='none';document.getElementById('auth-verify-view').style.display='block';}
+}
+async function signOut(){await sb.auth.signOut();showToast('Signed out. See you soon! 🙏');}
+function selectPlan(plan){selectedPlan=plan;['starter','creator','pro'].forEach(p=>document.getElementById('plan-'+p).classList.toggle('selected',p===plan));}
+function closePaywall(){document.getElementById('paywall-modal').classList.add('hidden');resetForm();}
+function goToPay(){showToast('Contact us to upgrade! 🙏');closePaywall();}
+function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3000);}
+function updateCount(){document.getElementById('char-num').innerText=document.getElementById('story-text').value.length;}
+function selectType(el,type){document.querySelectorAll('.type-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selectedType=type;}
+function selectStyle(el,style){document.querySelectorAll('.style-btn').forEach(b=>b.classList.remove('selected'));el.classList.add('selected');selectedStyle=style;}
+function goToStep2(){if(!selectedType){showToast('Please choose a story type first!');return;}document.getElementById('step1').style.display='none';document.getElementById('step2').style.display='block';updateSteps(2);window.scrollTo({top:0,behavior:'smooth'});}
+function goToStep3(){const s=document.getElementById('story-text').value.trim();if(s.length<20){showToast('Please tell us a bit more about your story!');return;}document.getElementById('step2').style.display='none';document.getElementById('step3').style.display='block';updateSteps(3);window.scrollTo({top:0,behavior:'smooth'});}
+function updateSteps(step){['dot1','dot2','dot3'].forEach((d,i)=>{const el=document.getElementById(d);el.className='step-dot';if(i+1<step){el.classList.add('done');el.innerText='✓';}else if(i+1===step)el.classList.add('active');else el.classList.add('inactive');});['line1','line2'].forEach((l,i)=>{const el=document.getElementById(l);el.className='step-line';if(i+1<step)el.classList.add('done');});}
+function buildPrompt(){const story=document.getElementById('story-text').value.trim();const styles={cinematic:'Epic cinematic style, dramatic lighting, film grain, golden hour, IMAX quality',emotional:'Warm emotional atmosphere, soft golden light, intimate, heartfelt and moving',powerful:'Bold dynamic visuals, strong contrast, energetic, motivational and powerful',peaceful:'Serene peaceful atmosphere, soft natural light, gentle movement, calm and reflective'};return `${styles[selectedStyle]||styles.cinematic}. Story theme: ${selectedType}. Visual narrative: ${story.substring(0,150)}. Vertical 9:16 format. No text overlays. Photorealistic. Ultra high quality.`;}
+async function generateVideo(){
+if(!selectedStyle){showToast('Please choose a video style first!');return;}
+if(!currentUser){document.getElementById('auth-modal').classList.remove('hidden');return;}
+if(userCredits<=0){document.getElementById('paywall-modal').classList.remove('hidden');return;}
+document.getElementById('step3').style.display='none';
+document.getElementById('error-card').classList.remove('show');
+document.getElementById('progress-card').classList.add('show');
+window.scrollTo({top:0,behavior:'smooth'});
+startProgress();
+try{
+const{data:{session}}=await sb.auth.getSession();
+const response=await fetch(EDGE_URL,{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+session.access_token},body:JSON.stringify({prompt:buildPrompt()})});
+const data=await response.json();
+const newCredits=userCredits-1;
+await sb.from('user_credits').update({videos_remaining:newCredits}).eq('user_id',currentUser.id);
+userCredits=newCredits;
+updateCreditsUI();
+if(data.request_id){pollForVideo(data.request_id,session.access_token);}
+else if(data.video?.url){showVideo(data.video.url);}
+else if(data.url){showVideo(data.url);}
+else{showError('Could not start video generation. Please try again.');}
+}catch(err){showError('Connection error. Please check your internet and try again.');}
+}
+async function pollForVideo(requestId,token){
+let attempts=0;
+const poll=setInterval(async()=>{
+attempts++;
+if(attempts>60){clearInterval(poll);showError('Video is taking too long. Please try again.');return;}
+try{
+const res=await fetch('https://fal.run/fal-ai/minimax-video/text-to-video/requests/'+requestId,{headers:{'Authorization':'Bearer '+token}});
+const result=await res.json();
+if(result.status==='COMPLETED'||result.video){clearInterval(poll);const url=result.video?.url||result.output?.video?.url||result.url;if(url)showVideo(url);else showError('Video completed but could not load.');}
+else if(result.status==='FAILED'){clearInterval(poll);showError('Video generation failed. Please try again.');}
+}catch(e){console.log('Polling...');}
+},5000);
+}
+function startProgress(){
+const bar=document.getElementById('progress-bar');const status=document.getElementById('progress-status');const sub=document.getElementById('progress-sub');
+const stages=[{pct:15,status:'Analyzing your story...',sub:'Reading the emotion in your words'},{pct:30,status:'Building your narrative...',sub:'Crafting the perfect visual story'},{pct:50,status:'Generating visuals...',sub:'Creating your cinematic scenes'},{pct:70,status:'Rendering your film...',sub:'Bringing your story to life'},{pct:85,status:'Adding final touches...',sub:'Polishing every frame'},{pct:95,status:'Almost ready...',sub:'Your film is nearly complete'}];
+let i=0;const interval=setInterval(()=>{if(i>=stages.length){clearInterval(interval);return;}bar.style.width=stages[i].pct+'%';status.innerText=stages[i].status;sub.innerText=stages[i].sub;i++;},8000);
+}
+function showVideo(url){
+document.getElementById('progress-card').classList.remove('show');
+document.getElementById('result-card').classList.add('show');
+document.getElementById('video-screen').innerHTML=`<video controls autoplay loop playsinline style="width:100%;height:100%;object-fit:cover;"><source src="${url}" type="video/mp4"></video>`;
+showToast('✦ Your film is ready!');
+window.scrollTo({top:0,behavior:'smooth'});
+if(userCredits<=0)setTimeout(()=>document.getElementById('paywall-modal').classList.remove('hidden'),5000);
+}
+function shareVideo(){if(navigator.share){navigator.share({title:'My Story — YES!',text:'I just turned my story into a film with YES! Every life has a story worth telling.',url:window.location.href});}else{showToast('Copy the link to share your story!');}}
+function showError(msg){document.getElementById('progress-card').classList.remove('show');document.getElementById('error-msg').innerText='⚠️ '+msg;document.getElementById('error-card').classList.add('show');document.getElementById('step3').style.display='block';}
+function resetForm(){selectedType='';selectedStyle='';document.getElementById('story-text').value='';document.getElementById('char-num').innerText='0';document.querySelectorAll('.type-btn,.style-btn').forEach(b=>b.classList.remove('selected'));document.getElementById('result-card').classList.remove('show');document.getElementById('error-card').classList.remove('show');document.getElementById('step1').style.display='block';document.getElementById('step2').style.display='none';document.getElementById('step3').style.display='none';updateSteps(1);window.scrollTo({top:0,behavior:'smooth'});}
+</script>
+</body>
+</html>

@@ -1,0 +1,1055 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>YES! — Turn Your Story Into a Powerful Film</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;0,700;1,300;1,400;1,600;1,700&family=Outfit:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --ink:#02010A;--card:#080612;--card2:#0F0D1A;
+  --accent:#E8C547;--accent2:#F5D76E;--accent3:#C8961E;
+  --white:#FFFFFF;--offwhite:#EDE8DC;--muted:#4E4865;--muted2:#857EA0;
+  --border:rgba(255,255,255,0.04);--border2:rgba(255,255,255,0.08);
+  --font-d:'Cormorant Garamond',Georgia,serif;--font-b:'Outfit',sans-serif;
+  --green:#4CC98A;--red:#E05C6A;
+  --gold-ray:rgba(232,197,71,0.12);
+}
+*{-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{background:var(--ink);color:var(--offwhite);font-family:var(--font-b);overflow-x:hidden;-webkit-font-smoothing:antialiased;}
+
+/* ═══════════════════════════════════════════
+   THE BACKGROUND — layered, painterly, static
+   No animation. Pure visual depth.
+═══════════════════════════════════════════ */
+.bg{position:fixed;inset:0;z-index:0;pointer-events:none;}
+.bg-layer1{position:absolute;inset:0;background:radial-gradient(ellipse 120% 65% at 50% -5%,rgba(232,197,71,0.14) 0%,transparent 52%);}
+.bg-layer2{position:absolute;inset:0;background:radial-gradient(ellipse 70% 50% at 95% 85%,rgba(140,60,220,0.07) 0%,transparent 55%);}
+.bg-layer3{position:absolute;inset:0;background:radial-gradient(ellipse 55% 40% at 2% 55%,rgba(232,197,71,0.055) 0%,transparent 55%);}
+.bg-layer4{position:absolute;inset:0;background:radial-gradient(ellipse 90% 55% at 50% 108%,rgba(232,197,71,0.06) 0%,transparent 50%);}
+.bg-layer5{position:absolute;inset:0;background:radial-gradient(ellipse 40% 30% at 50% 50%,rgba(232,197,71,0.018) 0%,transparent 60%);}
+
+/* Fine star texture — static SVG, no motion */
+.bg-stars{position:absolute;inset:0;opacity:0.55;
+  background-image:
+    radial-gradient(1px 1px at 12% 18%,rgba(232,197,71,0.7) 0%,transparent 100%),
+    radial-gradient(1px 1px at 88% 8%,rgba(255,255,255,0.4) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 34% 6%,rgba(232,197,71,0.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 67% 14%,rgba(255,255,255,0.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 23% 32%,rgba(232,197,71,0.4) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 78% 26%,rgba(232,197,71,0.6) 0%,transparent 100%),
+    radial-gradient(1px 1px at 45% 22%,rgba(255,255,255,0.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 91% 38%,rgba(232,197,71,0.35) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 6% 45%,rgba(232,197,71,0.5) 0%,transparent 100%),
+    radial-gradient(1px 1px at 55% 40%,rgba(255,255,255,0.25) 0%,transparent 100%),
+    radial-gradient(1px 1px at 29% 55%,rgba(232,197,71,0.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 82% 52%,rgba(255,255,255,0.2) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 16% 68%,rgba(232,197,71,0.45) 0%,transparent 100%),
+    radial-gradient(1px 1px at 72% 62%,rgba(232,197,71,0.3) 0%,transparent 100%),
+    radial-gradient(1px 1px at 41% 74%,rgba(255,255,255,0.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 94% 70%,rgba(232,197,71,0.35) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 8% 82%,rgba(232,197,71,0.4) 0%,transparent 100%),
+    radial-gradient(1px 1px at 60% 88%,rgba(255,255,255,0.2) 0%,transparent 100%),
+    radial-gradient(1px 1px at 38% 92%,rgba(232,197,71,0.3) 0%,transparent 100%),
+    radial-gradient(1.5px 1.5px at 76% 96%,rgba(232,197,71,0.45) 0%,transparent 100%);
+}
+
+/* Subtle grain — static, safe */
+.bg-grain{position:absolute;inset:0;opacity:0.018;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.88' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size:160px;}
+
+/* Mouse glow — extremely slow, almost static */
+#mglow{position:fixed;width:900px;height:900px;border-radius:50%;
+  background:radial-gradient(circle,rgba(232,197,71,0.038) 0%,transparent 68%);
+  pointer-events:none;z-index:1;transform:translate(-50%,-50%);
+  transition:left 3s ease,top 3s ease;}
+
+/* Custom cursor */
+@media(hover:hover){
+  *{cursor:none!important;}
+  #cur{position:fixed;width:7px;height:7px;background:var(--accent);border-radius:50%;pointer-events:none;z-index:99997;transform:translate(-50%,-50%);box-shadow:0 0 10px rgba(232,197,71,0.8);transition:width 0.4s,height 0.4s;}
+  #cur-ring{position:fixed;width:30px;height:30px;border:1px solid rgba(232,197,71,0.35);border-radius:50%;pointer-events:none;z-index:99996;transform:translate(-50%,-50%);}
+}
+
+/* ═══════════════════════════════════════════
+   ANIMATIONS — only riseIn (page load, once),
+   slideUp (modal), shimmer (slow, smooth).
+   ZERO flicker. ZERO strobe. ZERO pulse.
+═══════════════════════════════════════════ */
+@keyframes riseIn{from{opacity:0;transform:translateY(44px)}to{opacity:1;transform:translateY(0)}}
+@keyframes shimmer{0%{background-position:-600% center}100%{background-position:600% center}}
+@keyframes slideUp{from{transform:translateY(100%);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+@keyframes floatUp{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+@keyframes orbitSpin{from{transform:translate(-50%,-52%) rotate(0deg)}to{transform:translate(-50%,-52%) rotate(360deg)}}
+@keyframes orbitSpinR{from{transform:translate(-50%,-52%) rotate(0deg)}to{transform:translate(-50%,-52%) rotate(-360deg)}}
+
+/* Scroll reveal */
+.reveal{opacity:0;transform:translateY(40px);transition:opacity 1.2s cubic-bezier(0.16,1,0.3,1),transform 1.2s cubic-bezier(0.16,1,0.3,1);}
+.reveal.visible{opacity:1;transform:translateY(0);}
+
+/* Toast */
+.toast{position:fixed;bottom:32px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);padding:14px 32px;border-radius:100px;font-size:14px;font-weight:700;z-index:9999;display:none;white-space:nowrap;max-width:90vw;box-shadow:0 8px 40px rgba(232,197,71,0.35);}
+.toast.show{display:block;animation:fadeUp 0.4s ease;}
+
+/* NAV */
+nav{position:fixed;top:0;left:0;right:0;z-index:900;display:flex;align-items:center;justify-content:space-between;padding:22px 28px;
+  background:linear-gradient(to bottom,rgba(2,1,10,0.97),transparent);backdrop-filter:blur(24px);}
+.logo{font-family:var(--font-d);font-size:34px;font-weight:700;color:var(--accent);letter-spacing:-1px;cursor:pointer;
+  text-shadow:0 0 70px rgba(232,197,71,0.65),0 0 140px rgba(232,197,71,0.2);position:relative;z-index:2;}
+.logo::before{content:'✦';font-size:7px;position:absolute;top:7px;left:-16px;color:var(--accent);opacity:0.45;}
+.logo::after{content:'✦';font-size:7px;position:absolute;top:7px;right:-16px;color:var(--accent);opacity:0.45;}
+.nav-right{display:flex;align-items:center;gap:10px;}
+.nav-cta{background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);border:none;padding:11px 24px;border-radius:100px;font-family:var(--font-b);font-size:13px;font-weight:700;cursor:pointer;transition:all 0.4s ease;box-shadow:0 4px 24px rgba(232,197,71,0.22);}
+.nav-cta:hover{transform:scale(1.07);box-shadow:0 0 60px rgba(232,197,71,0.55);}
+.nav-signin{background:transparent;color:var(--muted2);border:1px solid var(--border2);padding:11px 20px;border-radius:100px;font-family:var(--font-b);font-size:13px;cursor:pointer;transition:all 0.3s;}
+.nav-signin:hover{color:var(--accent);border-color:rgba(232,197,71,0.45);background:rgba(232,197,71,0.04);}
+
+/* HERO */
+.hero{position:relative;z-index:10;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:120px 24px 80px;overflow:hidden;}
+
+/* Decorative orbit rings — very slow, totally smooth */
+.orbit1,.orbit2,.orbit3{position:absolute;border-radius:50%;top:50%;left:50%;pointer-events:none;}
+.orbit1{width:740px;height:740px;border:1px solid rgba(232,197,71,0.035);animation:orbitSpin 100s linear infinite;}
+.orbit2{width:540px;height:540px;border:1px solid rgba(232,197,71,0.06);animation:orbitSpinR 70s linear infinite;}
+.orbit3{width:370px;height:370px;border:1px solid rgba(232,197,71,0.04);animation:orbitSpin 45s linear infinite;}
+.orbit1::before{content:'✦';position:absolute;top:0;left:50%;transform:translateX(-50%);color:rgba(232,197,71,0.3);font-size:8px;}
+.orbit2::after{content:'✦';position:absolute;bottom:0;right:6%;color:rgba(232,197,71,0.22);font-size:6px;}
+
+.hero-badge{display:inline-flex;align-items:center;gap:9px;
+  background:rgba(232,197,71,0.06);border:1px solid rgba(232,197,71,0.2);
+  border-radius:100px;padding:9px 26px;font-size:10px;font-weight:600;letter-spacing:3.5px;text-transform:uppercase;color:var(--accent);
+  margin-bottom:52px;animation:riseIn 1.4s ease both;backdrop-filter:blur(14px);
+  box-shadow:0 0 50px rgba(232,197,71,0.07),inset 0 1px 0 rgba(255,255,255,0.06);
+  position:relative;z-index:2;}
+.badge-dot{width:5px;height:5px;border-radius:50%;background:var(--accent);box-shadow:0 0 8px var(--accent);}
+
+.hero h1{font-family:var(--font-d);line-height:0.92;letter-spacing:-3px;margin-bottom:34px;position:relative;z-index:2;}
+.hero h1 .l1{display:block;font-size:clamp(44px,11vw,80px);font-weight:300;color:rgba(237,232,220,0.9);animation:riseIn 1.4s 0.1s ease both;opacity:0;}
+.hero h1 .l2{display:block;font-size:clamp(70px,18.5vw,128px);font-weight:700;font-style:italic;
+  background:linear-gradient(118deg,#A87818 0%,var(--accent) 18%,#FFF6A8 40%,var(--accent2) 55%,var(--accent) 72%,#C07010 88%,#E8C547 100%);
+  background-size:500% auto;
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  animation:riseIn 1.4s 0.18s ease both,shimmer 12s linear 1.8s infinite;opacity:0;
+  filter:drop-shadow(0 0 80px rgba(232,197,71,0.42)) drop-shadow(0 0 160px rgba(232,197,71,0.14));}
+.hero h1 .l3{display:block;font-size:clamp(28px,7.5vw,60px);font-weight:300;font-style:italic;color:var(--muted2);animation:riseIn 1.4s 0.26s ease both;opacity:0;letter-spacing:-1px;}
+
+/* The dividing line under the headline */
+.hero-rule{width:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,197,71,0.4),transparent);margin:36px auto;animation:riseIn 1.4s 0.36s ease both;opacity:0;position:relative;z-index:2;max-width:200px;transition:width 1.4s ease;}
+.hero-rule.visible{width:200px;}
+
+.hero-sub{font-size:18px;color:var(--muted2);font-weight:300;line-height:2.1;max-width:320px;margin:0 auto 56px;animation:riseIn 1.4s 0.44s ease both;opacity:0;position:relative;z-index:2;}
+
+.hero-btns{display:flex;flex-direction:column;gap:14px;width:100%;max-width:290px;animation:riseIn 1.4s 0.52s ease both;opacity:0;position:relative;z-index:2;}
+.btn-gold{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 45%,var(--accent3) 100%);
+  color:var(--ink);border:none;padding:22px;border-radius:18px;font-family:var(--font-b);font-size:17px;font-weight:700;cursor:pointer;
+  transition:all 0.5s cubic-bezier(0.16,1,0.3,1);
+  box-shadow:0 14px 55px rgba(232,197,71,0.32),0 2px 10px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.3);}
+.btn-gold:hover{transform:translateY(-7px) scale(1.02);box-shadow:0 32px 80px rgba(232,197,71,0.58),0 4px 22px rgba(0,0,0,0.5);}
+.btn-ghost{background:rgba(255,255,255,0.02);color:var(--offwhite);border:1px solid var(--border2);padding:20px;border-radius:18px;font-family:var(--font-b);font-size:15px;font-weight:400;cursor:pointer;transition:all 0.4s ease;backdrop-filter:blur(12px);}
+.btn-ghost:hover{border-color:rgba(232,197,71,0.42);color:var(--accent);background:rgba(232,197,71,0.04);transform:translateY(-3px);}
+
+/* Stats glass bar */
+.hero-stats{display:flex;gap:0;justify-content:center;margin-top:72px;animation:riseIn 1.4s 0.6s ease both;opacity:0;position:relative;z-index:2;
+  background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.07);border-radius:24px;overflow:hidden;backdrop-filter:blur(20px);
+  box-shadow:0 0 100px rgba(232,197,71,0.04),inset 0 1px 0 rgba(255,255,255,0.04);}
+.hero-stat{text-align:center;padding:24px 34px;flex:1;position:relative;}
+.hero-stat:not(:last-child)::after{content:'';position:absolute;right:0;top:24%;bottom:24%;width:1px;background:rgba(255,255,255,0.065);}
+.hero-stat .num{font-family:var(--font-d);font-size:38px;font-weight:700;color:var(--accent);display:block;text-shadow:0 0 50px rgba(232,197,71,0.45);line-height:1.1;}
+.hero-stat .lbl{font-size:9px;color:var(--muted);letter-spacing:3.5px;text-transform:uppercase;margin-top:5px;display:block;}
+
+/* TICKER */
+.ticker{overflow:hidden;border-top:1px solid var(--border);border-bottom:1px solid var(--border);padding:18px 0;position:relative;z-index:10;background:rgba(2,1,10,0.7);backdrop-filter:blur(8px);}
+.ticker::before,.ticker::after{content:'';position:absolute;top:0;bottom:0;width:130px;z-index:2;pointer-events:none;}
+.ticker::before{left:0;background:linear-gradient(90deg,var(--ink),transparent);}
+.ticker::after{right:0;background:linear-gradient(-90deg,var(--ink),transparent);}
+.ticker-inner{display:flex;animation:tick 44s linear infinite;width:max-content;}
+.ticker-item{display:inline-flex;align-items:center;gap:14px;padding:0 36px;font-family:var(--font-d);font-size:16px;font-style:italic;font-weight:300;color:var(--muted);white-space:nowrap;}
+.ticker-item b{color:var(--accent);font-style:normal;font-weight:600;text-shadow:0 0 24px rgba(232,197,71,0.38);}
+@keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+
+/* SECTIONS */
+.section{position:relative;z-index:10;padding:104px 24px;max-width:960px;margin:0 auto;}
+.divider{height:1px;background:linear-gradient(90deg,transparent,rgba(232,197,71,0.07),transparent);margin:0 24px;position:relative;z-index:10;}
+.tag{font-size:9px;font-weight:700;letter-spacing:4.5px;text-transform:uppercase;color:var(--accent);margin-bottom:22px;display:flex;align-items:center;gap:16px;opacity:0.8;}
+.tag::before{content:'';width:36px;height:1px;background:linear-gradient(90deg,transparent,var(--accent));}
+.sh{font-family:var(--font-d);font-size:clamp(40px,10.5vw,76px);font-weight:300;line-height:0.96;letter-spacing:-2.5px;margin-bottom:18px;}
+.sh em{font-style:italic;font-weight:700;color:var(--accent);text-shadow:0 0 70px rgba(232,197,71,0.28);}
+.sp{font-size:16px;font-weight:300;color:var(--muted2);line-height:2;max-width:380px;margin-bottom:58px;}
+
+/* STEPS */
+.steps{display:flex;flex-direction:column;gap:2px;}
+.step{display:flex;align-items:stretch;}
+.step-line{display:flex;flex-direction:column;align-items:center;width:56px;min-width:56px;}
+.step-num{width:44px;height:44px;border-radius:50%;background:rgba(232,197,71,0.055);border:1px solid rgba(232,197,71,0.26);display:flex;align-items:center;justify-content:center;font-family:var(--font-d);font-size:19px;font-weight:700;color:var(--accent);flex-shrink:0;box-shadow:0 0 36px rgba(232,197,71,0.1);}
+.step-connector{width:1px;flex:1;background:linear-gradient(to bottom,rgba(232,197,71,0.26),transparent);margin:4px 0;}
+.step-body{padding:0 0 50px 28px;}
+.step-body h3{font-size:20px;font-weight:600;color:var(--white);margin-bottom:9px;margin-top:9px;}
+.step-body p{font-size:15px;color:var(--muted2);line-height:1.9;font-weight:300;}
+
+/* CATEGORIES */
+.cats{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.cat{background:linear-gradient(145deg,var(--card),rgba(14,11,22,0.99));border:1px solid var(--border);border-radius:22px;padding:26px 22px;cursor:pointer;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;}
+.cat::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(232,197,71,0.06),transparent 60%);opacity:0;transition:opacity 0.5s;}
+.cat::after{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,197,71,0.22),transparent);opacity:0;transition:opacity 0.5s;}
+.cat:hover{border-color:rgba(232,197,71,0.4);transform:translateY(-6px);box-shadow:0 28px 80px rgba(0,0,0,0.75),0 0 0 1px rgba(232,197,71,0.06);}
+.cat:hover::before,.cat:hover::after{opacity:1;}
+.cat-icon{font-size:30px;margin-bottom:14px;display:block;animation:floatUp 5s ease-in-out infinite;}
+.cat-name{font-size:14px;font-weight:600;color:var(--white);margin-bottom:5px;}
+.cat-desc{font-size:12px;color:var(--muted);font-weight:300;line-height:1.55;}
+
+/* DEMO */
+.demo-box{background:linear-gradient(145deg,var(--card),rgba(10,8,18,0.99));border:1px solid var(--border2);border-radius:30px;padding:38px 30px;position:relative;overflow:hidden;box-shadow:0 36px 110px rgba(0,0,0,0.65);}
+.demo-box::before{content:'';position:absolute;top:0;left:55px;right:55px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.demo-box::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 55% 28% at 50% 0%,rgba(232,197,71,0.022),transparent);pointer-events:none;}
+.demo-label{font-size:10px;font-weight:700;letter-spacing:3.5px;text-transform:uppercase;color:var(--muted);margin-bottom:14px;}
+.demo-input{width:100%;background:rgba(255,255,255,0.025);border:1px solid rgba(255,255,255,0.065);border-radius:18px;padding:20px 22px;color:var(--offwhite);font-family:var(--font-b);font-size:16px;line-height:1.65;resize:none;outline:none;min-height:80px;transition:all 0.4s ease;}
+.demo-input:focus{border-color:rgba(232,197,71,0.4);background:rgba(232,197,71,0.016);box-shadow:0 0 0 4px rgba(232,197,71,0.05);}
+.demo-input::placeholder{color:var(--muted);}
+.demo-btn{width:100%;margin-top:18px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);border:none;padding:20px;border-radius:16px;font-family:var(--font-b);font-size:16px;font-weight:700;cursor:pointer;transition:all 0.45s ease;box-shadow:0 10px 44px rgba(232,197,71,0.22);}
+.demo-btn:hover{transform:translateY(-5px);box-shadow:0 26px 65px rgba(232,197,71,0.5);}
+.angles-title{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin:28px 0 14px;display:none;}
+.angles{display:flex;flex-direction:column;gap:10px;}
+.angle{background:rgba(232,197,71,0.035);border:1px solid rgba(232,197,71,0.1);border-radius:16px;padding:18px 22px;font-size:15px;color:var(--offwhite);cursor:pointer;transition:all 0.4s ease;display:flex;justify-content:space-between;align-items:center;gap:12px;}
+.angle:hover{background:rgba(232,197,71,0.09);border-color:rgba(232,197,71,0.42);transform:translateX(8px);}
+.angle-arrow{color:var(--accent);font-size:16px;flex-shrink:0;}
+.loading{display:none;text-align:center;padding:30px;color:var(--muted);font-size:12px;letter-spacing:3px;}
+.loading.show{display:block;}
+
+/* STORY WALL */
+.wall-section{position:relative;z-index:10;padding:104px 24px;max-width:960px;margin:0 auto;}
+.wall-grid{display:flex;flex-direction:column;gap:12px;}
+.wall-card{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.99));border:1px solid var(--border);border-radius:28px;padding:32px 28px;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;}
+.wall-card::before{content:'';position:absolute;top:0;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(232,197,71,0.1),transparent);}
+.wall-card::after{content:'\201C';position:absolute;top:-18px;right:18px;font-family:var(--font-d);font-size:130px;color:rgba(232,197,71,0.04);line-height:1;pointer-events:none;}
+.wall-card:hover{border-color:rgba(232,197,71,0.26);transform:translateY(-5px);box-shadow:0 32px 100px rgba(0,0,0,0.7);}
+.wall-card-top{display:flex;align-items:center;gap:14px;margin-bottom:18px;}
+.wall-avatar{width:48px;height:48px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;box-shadow:0 0 32px rgba(232,197,71,0.24);}
+.wall-name{font-size:14px;font-weight:600;color:var(--white);}
+.wall-type{font-size:10px;color:var(--accent);font-weight:500;letter-spacing:2.5px;text-transform:uppercase;opacity:0.9;}
+.wall-quote{font-family:var(--font-d);font-size:22px;font-style:italic;color:var(--offwhite);line-height:1.55;margin-bottom:22px;font-weight:300;}
+.wall-actions{display:flex;gap:8px;flex-wrap:wrap;}
+.wall-action{background:rgba(255,255,255,0.022);border:1px solid var(--border);border-radius:100px;padding:9px 18px;font-size:12px;color:var(--muted2);cursor:pointer;transition:all 0.3s ease;font-family:var(--font-b);}
+.wall-action:hover{border-color:rgba(232,197,71,0.4);color:var(--accent);background:rgba(232,197,71,0.05);transform:translateY(-2px);}
+
+/* FEATURES */
+.feats{display:flex;flex-direction:column;gap:10px;}
+.feat{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.96));border:1px solid var(--border);border-radius:26px;padding:30px 26px;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);display:flex;gap:24px;align-items:flex-start;position:relative;overflow:hidden;}
+.feat::before{content:'';position:absolute;left:0;top:15%;bottom:15%;width:2px;background:linear-gradient(to bottom,transparent,var(--accent),transparent);opacity:0;transition:opacity 0.4s;}
+.feat:hover{border-color:rgba(232,197,71,0.24);transform:translateX(8px);box-shadow:0 14px 55px rgba(0,0,0,0.55);}
+.feat:hover::before{opacity:0.7;}
+.feat-icon{font-size:24px;width:56px;height:56px;background:rgba(232,197,71,0.05);border-radius:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:1px solid rgba(232,197,71,0.1);}
+.feat-body h3{font-family:var(--font-d);font-size:23px;font-weight:600;color:var(--white);margin-bottom:8px;}
+.feat-body p{font-size:14px;color:var(--muted2);line-height:1.8;font-weight:300;}
+.feat-live{display:inline-block;margin-top:12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--green);background:rgba(76,201,138,0.07);padding:5px 14px;border-radius:100px;border:1px solid rgba(76,201,138,0.2);}
+.feat-soon{display:inline-block;margin-top:12px;font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);background:rgba(232,197,71,0.06);padding:5px 14px;border-radius:100px;border:1px solid rgba(232,197,71,0.18);}
+
+/* TRENDING */
+.trend-card{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.96));border:1px solid var(--border);border-radius:22px;padding:24px;display:flex;align-items:center;gap:22px;transition:all 0.45s ease;margin-bottom:12px;}
+.trend-card:hover{border-color:rgba(232,197,71,0.2);transform:translateY(-3px);box-shadow:0 18px 55px rgba(0,0,0,0.55);}
+.trend-rank{font-family:var(--font-d);font-size:42px;font-weight:700;min-width:42px;text-align:center;line-height:1;}
+
+/* LEADERBOARD */
+.leader-card{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.96));border:1px solid var(--border);border-radius:22px;padding:24px 26px;display:flex;align-items:center;gap:20px;transition:all 0.45s ease;margin-bottom:10px;}
+.leader-card:hover{transform:translateY(-4px);box-shadow:0 22px 65px rgba(0,0,0,0.65);}
+.leader-rank{font-family:var(--font-d);font-size:34px;font-weight:700;min-width:36px;text-align:center;}
+.leader-rank.gold{color:var(--accent);text-shadow:0 0 28px rgba(232,197,71,0.55);}
+.leader-rank.silver{color:#B0B8C8;}
+.leader-rank.bronze{color:#C87B4A;}
+.leader-rank.other{color:var(--muted);}
+.leader-avatar{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;}
+.leader-info{flex:1;}
+.leader-name{font-size:15px;font-weight:600;color:var(--white);margin-bottom:4px;}
+.leader-meta{font-size:12px;color:var(--accent);opacity:0.9;}
+.leader-score{font-family:var(--font-d);font-size:26px;font-weight:700;color:var(--accent);text-align:right;text-shadow:0 0 24px rgba(232,197,71,0.35);}
+.leader-score-label{font-size:9px;color:var(--muted);letter-spacing:2.5px;text-transform:uppercase;text-align:right;}
+
+/* PRICING */
+.pricing-grid{display:flex;flex-direction:column;gap:14px;}
+.price-card{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.99));border:1px solid var(--border);border-radius:30px;padding:34px 28px;position:relative;overflow:hidden;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);}
+.price-card:hover{transform:translateY(-7px);box-shadow:0 36px 100px rgba(0,0,0,0.75);}
+.price-card.featured{border-color:rgba(232,197,71,0.34);background:linear-gradient(145deg,#1A1526,#0C0918);}
+.price-card.featured::before{content:'';position:absolute;top:0;left:36px;right:36px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.price-card.featured::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 80% 45% at 50% 0%,rgba(232,197,71,0.055),transparent);pointer-events:none;}
+.price-badge{position:absolute;top:22px;right:22px;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);font-size:9px;font-weight:700;letter-spacing:2px;text-transform:uppercase;padding:6px 16px;border-radius:100px;box-shadow:0 4px 24px rgba(232,197,71,0.38);}
+.price-name{font-size:12px;font-weight:700;color:var(--muted2);margin-bottom:12px;letter-spacing:2.5px;text-transform:uppercase;}
+.price-amount{font-family:var(--font-d);font-size:58px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:6px;text-shadow:0 0 44px rgba(232,197,71,0.3);}
+.price-amount span{font-size:15px;font-weight:300;color:var(--muted2);}
+.price-desc{font-size:14px;color:var(--muted);margin-bottom:26px;font-weight:300;}
+.price-features{list-style:none;display:flex;flex-direction:column;gap:12px;margin-bottom:30px;}
+.price-features li{font-size:14px;color:var(--offwhite);display:flex;align-items:center;gap:12px;font-weight:300;}
+.price-features li::before{content:'✓';color:var(--green);font-weight:700;flex-shrink:0;}
+.price-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);border:none;padding:19px;border-radius:18px;font-family:var(--font-b);font-size:15px;font-weight:700;cursor:pointer;transition:all 0.45s ease;}
+.price-btn:hover{transform:translateY(-3px);box-shadow:0 22px 55px rgba(232,197,71,0.48);}
+.price-btn.ghost{background:transparent;color:var(--offwhite);border:1px solid var(--border2);}
+.price-btn.ghost:hover{border-color:rgba(232,197,71,0.42);color:var(--accent);}
+.free-banner{background:rgba(76,201,138,0.05);border:1px solid rgba(76,201,138,0.18);border-radius:22px;padding:26px 28px;display:flex;align-items:center;gap:22px;margin-bottom:24px;}
+.free-banner-icon{font-size:34px;flex-shrink:0;}
+.free-banner h3{font-size:16px;font-weight:700;color:var(--green);margin-bottom:5px;}
+.free-banner p{font-size:13px;color:var(--muted2);font-weight:300;}
+
+/* TESTIMONIALS */
+.testi-grid{display:flex;flex-direction:column;gap:12px;}
+.testi-card{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.99));border:1px solid var(--border);border-radius:28px;padding:34px 30px;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;}
+.testi-card::before{content:'\201C';position:absolute;top:-22px;right:20px;font-family:var(--font-d);font-size:150px;color:rgba(232,197,71,0.038);line-height:1;font-style:italic;pointer-events:none;}
+.testi-card:hover{border-color:rgba(232,197,71,0.26);transform:translateY(-4px);box-shadow:0 26px 85px rgba(0,0,0,0.65);}
+.testi-stars{color:var(--accent);font-size:13px;letter-spacing:4px;margin-bottom:20px;text-shadow:0 0 14px rgba(232,197,71,0.44);}
+.testi-quote{font-family:var(--font-d);font-size:22px;font-style:italic;font-weight:300;color:var(--offwhite);line-height:1.62;margin-bottom:24px;}
+.testi-author{display:flex;align-items:center;gap:16px;}
+.testi-avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;}
+.testi-name{font-size:14px;font-weight:700;color:var(--white);margin-bottom:4px;}
+.testi-type{font-size:10px;color:var(--accent);font-weight:500;letter-spacing:2px;text-transform:uppercase;}
+
+/* FAQ */
+.faq-list{display:flex;flex-direction:column;gap:10px;}
+.faq-item{background:linear-gradient(145deg,var(--card),rgba(12,9,20,0.96));border:1px solid var(--border);border-radius:22px;overflow:hidden;transition:all 0.4s ease;}
+.faq-item.open{border-color:rgba(232,197,71,0.3);box-shadow:0 12px 44px rgba(0,0,0,0.45);}
+.faq-q{padding:28px 26px;display:flex;align-items:center;justify-content:space-between;gap:16px;cursor:pointer;font-size:16px;font-weight:500;color:var(--white);line-height:1.4;transition:color 0.28s;}
+.faq-q:hover{color:var(--accent);}
+.faq-arrow{font-size:22px;color:var(--accent);flex-shrink:0;transition:transform 0.5s cubic-bezier(0.16,1,0.3,1);display:inline-block;}
+.faq-item.open .faq-arrow{transform:rotate(45deg);}
+.faq-a{max-height:0;overflow:hidden;transition:max-height 0.6s ease,padding 0.4s ease;padding:0 26px;}
+.faq-item.open .faq-a{max-height:300px;padding:0 26px 28px;}
+.faq-a p{font-size:15px;color:var(--muted2);line-height:1.9;font-weight:300;border-top:1px solid var(--border);padding-top:22px;}
+
+/* CTA */
+.cta-section{position:relative;z-index:10;padding:80px 24px;}
+.cta-inner{background:linear-gradient(145deg,#191424 0%,#080612 100%);border:1px solid rgba(232,197,71,0.18);border-radius:44px;padding:100px 36px;text-align:center;position:relative;overflow:hidden;box-shadow:0 60px 180px rgba(0,0,0,0.8);}
+.cta-inner::before{content:'';position:absolute;top:0;left:80px;right:80px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.cta-inner::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse 65% 50% at 50% 0%,rgba(232,197,71,0.075),transparent);pointer-events:none;}
+.cta-deco{position:absolute;font-family:var(--font-d);font-size:120px;color:rgba(232,197,71,0.03);font-style:italic;pointer-events:none;}
+.cta-deco-l{top:-24px;left:24px;}
+.cta-deco-r{bottom:-24px;right:24px;}
+.cta-inner h2{font-family:var(--font-d);font-size:clamp(46px,12.5vw,82px);font-weight:300;letter-spacing:-3px;line-height:0.95;margin-bottom:24px;position:relative;z-index:1;}
+.cta-inner h2 em{font-style:italic;font-weight:700;color:var(--accent);text-shadow:0 0 90px rgba(232,197,71,0.55);}
+.cta-inner p{font-size:17px;color:var(--muted2);line-height:1.95;font-weight:300;margin-bottom:48px;max-width:320px;margin-left:auto;margin-right:auto;position:relative;z-index:1;}
+.cta-btn{background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 45%,var(--accent3) 100%);color:var(--ink);border:none;padding:28px 66px;border-radius:100px;font-family:var(--font-b);font-size:18px;font-weight:700;cursor:pointer;transition:all 0.5s cubic-bezier(0.16,1,0.3,1);box-shadow:0 18px 65px rgba(232,197,71,0.38),inset 0 1px 0 rgba(255,255,255,0.28);position:relative;z-index:1;}
+.cta-btn:hover{transform:translateY(-7px) scale(1.04);box-shadow:0 40px 110px rgba(232,197,71,0.65);}
+.mobile-banner{display:flex;align-items:center;justify-content:center;gap:10px;background:rgba(76,201,138,0.04);border:1px solid rgba(76,201,138,0.13);border-radius:100px;padding:13px 28px;margin-top:30px;font-size:13px;color:var(--muted2);position:relative;z-index:1;}
+.mobile-banner b{color:var(--green);}
+
+/* FOOTER */
+footer{position:relative;z-index:10;text-align:center;padding:56px 24px;border-top:1px solid var(--border);color:var(--muted);font-size:13px;font-weight:300;}
+.footer-logo{font-family:var(--font-d);font-size:38px;font-weight:700;color:var(--accent);margin-bottom:14px;text-shadow:0 0 70px rgba(232,197,71,0.6);}
+.footer-links{display:flex;justify-content:center;gap:30px;margin:18px 0;flex-wrap:wrap;}
+.footer-links a{color:var(--muted);font-size:13px;text-decoration:none;transition:color 0.3s;}
+.footer-links a:hover{color:var(--accent);}
+
+/* MODALS */
+.modal-overlay{position:fixed;inset:0;background:rgba(2,1,10,0.97);z-index:2000;display:flex;align-items:center;justify-content:center;padding:24px;backdrop-filter:blur(28px);display:none;}
+.modal-overlay.open{display:flex;}
+.modal{background:linear-gradient(145deg,var(--card),rgba(10,7,18,0.99));border:1px solid var(--border2);border-radius:38px;padding:42px 34px;max-width:420px;width:100%;animation:riseIn 0.55s cubic-bezier(0.16,1,0.3,1);position:relative;overflow:hidden;max-height:90vh;overflow-y:auto;box-shadow:0 70px 140px rgba(0,0,0,0.92);}
+.modal::before{content:'';position:absolute;top:0;left:36px;right:36px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.modal-x{position:absolute;top:18px;right:18px;background:rgba(255,255,255,0.045);border:none;color:var(--muted);width:36px;height:36px;border-radius:50%;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all 0.3s;}
+.modal-x:hover{background:rgba(255,255,255,0.1);color:var(--white);}
+.modal-logo{font-family:var(--font-d);font-size:46px;font-weight:700;color:var(--accent);text-align:center;margin-bottom:4px;text-shadow:0 0 55px rgba(232,197,71,0.48);}
+.modal-tagline{font-size:12px;color:var(--muted2);text-align:center;margin-bottom:30px;font-weight:300;}
+.modal-title{font-family:var(--font-d);font-size:32px;font-weight:600;color:var(--offwhite);margin-bottom:8px;}
+.modal-sub{font-size:14px;color:var(--muted2);font-weight:300;margin-bottom:24px;line-height:1.75;}
+.free-badge{background:rgba(76,201,138,0.07);border:1px solid rgba(76,201,138,0.22);border-radius:16px;padding:14px 18px;margin-bottom:22px;display:flex;align-items:center;gap:12px;}
+.free-badge-text{font-size:13px;color:var(--green);font-weight:600;}
+.auth-input{width:100%;background:rgba(255,255,255,0.035);border:1px solid var(--border2);border-radius:18px;padding:18px 22px;color:var(--offwhite);font-family:var(--font-b);font-size:15px;outline:none;transition:all 0.4s ease;margin-bottom:12px;}
+.auth-input:focus{border-color:rgba(232,197,71,0.46);box-shadow:0 0 0 4px rgba(232,197,71,0.065);}
+.auth-input::placeholder{color:var(--muted);}
+.auth-btn{width:100%;background:linear-gradient(135deg,var(--accent),var(--accent2));color:var(--ink);border:none;padding:20px;border-radius:18px;font-family:var(--font-b);font-size:16px;font-weight:700;cursor:pointer;transition:all 0.45s ease;margin-bottom:12px;box-shadow:0 8px 32px rgba(232,197,71,0.2);}
+.auth-btn:hover{transform:translateY(-3px);box-shadow:0 20px 55px rgba(232,197,71,0.44);}
+.auth-switch{text-align:center;font-size:14px;color:var(--muted2);}
+.auth-switch a{color:var(--accent);cursor:pointer;font-weight:600;}
+.auth-error{background:rgba(224,92,106,0.07);border:1px solid rgba(224,92,106,0.22);border-radius:14px;padding:13px 18px;font-size:13px;color:var(--red);margin-bottom:12px;display:none;}
+.auth-error.show{display:block;}
+
+/* SHARE MODAL */
+.share-modal-overlay{position:fixed;inset:0;background:rgba(2,1,10,0.97);z-index:3000;display:none;align-items:flex-end;justify-content:center;backdrop-filter:blur(28px);}
+.share-modal-overlay.open{display:flex;}
+.share-modal{background:linear-gradient(145deg,var(--card),rgba(10,7,18,0.99));border:1px solid var(--border2);border-top-left-radius:38px;border-top-right-radius:38px;padding:36px 28px 58px;width:100%;max-width:480px;animation:slideUp 0.5s cubic-bezier(0.16,1,0.3,1) both;position:relative;box-shadow:0 -35px 90px rgba(0,0,0,0.75);}
+.share-modal::before{content:'';position:absolute;top:0;left:75px;right:75px;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent);}
+.share-handle{width:50px;height:4px;background:rgba(255,255,255,0.09);border-radius:100px;margin:0 auto 30px;}
+.share-title{font-family:var(--font-d);font-size:30px;font-weight:600;color:var(--white);margin-bottom:7px;text-align:center;}
+.share-sub{font-size:13px;color:var(--muted2);text-align:center;margin-bottom:26px;font-weight:300;line-height:1.75;}
+.share-caption{background:rgba(232,197,71,0.04);border:1px solid rgba(232,197,71,0.11);border-radius:18px;padding:22px;margin-bottom:28px;font-size:13px;color:var(--offwhite);line-height:1.85;font-style:italic;position:relative;}
+.share-caption-label{font-size:9px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;font-style:normal;display:block;}
+.share-copy-btn{position:absolute;top:18px;right:18px;background:rgba(232,197,71,0.09);border:1px solid rgba(232,197,71,0.18);color:var(--accent);font-size:10px;font-weight:700;padding:6px 12px;border-radius:9px;cursor:pointer;font-family:var(--font-b);letter-spacing:1.5px;transition:all 0.3s;}
+.share-copy-btn:hover{background:rgba(232,197,71,0.2);}
+.share-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:14px;}
+.share-btn{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:22px 8px 16px;display:flex;flex-direction:column;align-items:center;gap:10px;cursor:pointer;transition:all 0.45s cubic-bezier(0.16,1,0.3,1);}
+.share-btn:hover{transform:translateY(-7px);border-color:rgba(232,197,71,0.36);box-shadow:0 18px 45px rgba(0,0,0,0.6);}
+.share-btn-icon{font-size:28px;line-height:1;}
+.share-btn-label{font-size:10px;font-weight:600;color:var(--muted2);}
+.share-close{width:100%;margin-top:7px;background:transparent;border:1px solid var(--border);padding:16px;border-radius:18px;font-family:var(--font-b);font-size:14px;font-weight:500;color:var(--muted2);cursor:pointer;transition:all 0.3s;}
+.share-close:hover{border-color:rgba(255,255,255,0.18);color:var(--offwhite);}
+
+/* ═══════════════════════════════════════════
+   SPECTACULAR ENHANCEMENTS — safe, cinematic
+═══════════════════════════════════════════ */
+
+/* Enhanced background — deeper, more painterly layers */
+.bg-layer1{background:radial-gradient(ellipse 130% 70% at 50% -8%,rgba(232,197,71,0.22) 0%,rgba(200,150,30,0.08) 35%,transparent 58%)!important;}
+.bg-layer2{background:radial-gradient(ellipse 80% 60% at 98% 90%,rgba(140,60,220,0.12) 0%,rgba(80,20,160,0.05) 40%,transparent 60%)!important;}
+.bg-layer3{background:radial-gradient(ellipse 65% 50% at 0% 50%,rgba(232,197,71,0.09) 0%,transparent 58%)!important;}
+.bg-layer4{background:radial-gradient(ellipse 100% 60% at 50% 110%,rgba(232,197,71,0.1) 0%,rgba(180,120,20,0.04) 40%,transparent 55%)!important;}
+.bg-layer5{background:radial-gradient(ellipse 50% 35% at 50% 50%,rgba(232,197,71,0.028) 0%,transparent 65%)!important;}
+
+/* NEW: Deep nebula layer — majestic purple-blue cosmic depth */
+.bg-nebula{position:absolute;inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 15% 25%,rgba(80,20,180,0.06) 0%,transparent 55%),
+    radial-gradient(ellipse 45% 35% at 85% 15%,rgba(120,40,200,0.05) 0%,transparent 50%),
+    radial-gradient(ellipse 70% 45% at 50% 75%,rgba(60,10,140,0.07) 0%,transparent 55%);
+}
+
+/* NEW: Cinematic film burn vignette */
+.bg-vignette{position:absolute;inset:0;
+  background:radial-gradient(ellipse 85% 80% at 50% 50%,transparent 40%,rgba(2,1,10,0.55) 100%);
+}
+
+/* NEW: Gold light shaft from above — like a spotlight on a stage */
+.bg-shaft{position:absolute;inset:0;
+  background:
+    linear-gradient(175deg,rgba(232,197,71,0.065) 0%,transparent 28%),
+    linear-gradient(185deg,rgba(232,197,71,0.03) 0%,transparent 22%);
+}
+
+/* Enhanced grain — richer film texture */
+.bg-grain{opacity:0.032!important;background-size:120px!important;}
+
+/* Enhanced stars — more stars, more depth */
+.bg-stars{opacity:0.75!important;}
+
+/* NEW: Floating dust particles — ultra-slow, totally safe */
+.bg-dust{position:absolute;inset:0;pointer-events:none;overflow:hidden;}
+.dust-p{position:absolute;width:1.5px;height:1.5px;border-radius:50%;background:rgba(232,197,71,0.5);}
+
+/* ── NAV ── more dramatic */
+nav{background:linear-gradient(to bottom,rgba(2,1,10,0.98) 0%,rgba(2,1,10,0.6) 80%,transparent 100%)!important;border-bottom:1px solid rgba(232,197,71,0.04);}
+.logo{text-shadow:0 0 40px rgba(232,197,71,0.9),0 0 80px rgba(232,197,71,0.4),0 0 160px rgba(232,197,71,0.15)!important;letter-spacing:2px!important;}
+
+/* ── HERO BADGE ── more jewel-like */
+.hero-badge{
+  background:linear-gradient(135deg,rgba(232,197,71,0.1),rgba(200,150,30,0.06))!important;
+  border:1px solid rgba(232,197,71,0.35)!important;
+  box-shadow:0 0 40px rgba(232,197,71,0.12),0 0 80px rgba(232,197,71,0.04),inset 0 1px 0 rgba(255,255,255,0.1)!important;
+}
+
+/* ── HERO HEADLINE — more luminous */
+.hero h1 .l1{text-shadow:0 2px 40px rgba(232,197,71,0.06);}
+.hero h1 .l2{
+  filter:drop-shadow(0 0 60px rgba(232,197,71,0.55)) drop-shadow(0 0 120px rgba(232,197,71,0.22)) drop-shadow(0 4px 30px rgba(180,120,20,0.3))!important;
+}
+
+/* ── ORBIT RINGS — more visible, more celestial */
+.orbit1{border:1px solid rgba(232,197,71,0.07)!important;width:820px!important;height:820px!important;}
+.orbit1::before{color:rgba(232,197,71,0.5)!important;font-size:10px!important;text-shadow:0 0 12px rgba(232,197,71,0.8);}
+.orbit2{border:1px solid rgba(232,197,71,0.1)!important;width:580px!important;height:580px!important;}
+.orbit2::after{color:rgba(232,197,71,0.4)!important;font-size:8px!important;text-shadow:0 0 10px rgba(232,197,71,0.7);}
+.orbit3{border:1px solid rgba(232,197,71,0.08)!important;width:400px!important;height:400px!important;}
+
+/* NEW: 4th orbit ring */
+.orbit4{position:absolute;border-radius:50%;top:50%;left:50%;
+  width:1100px;height:1100px;
+  border:1px solid rgba(232,197,71,0.02);
+  animation:orbitSpinR 160s linear infinite;
+  pointer-events:none;
+}
+.orbit4::before{content:'✦';position:absolute;top:50%;right:0;transform:translateY(-50%);color:rgba(232,197,71,0.18);font-size:7px;text-shadow:0 0 8px rgba(232,197,71,0.6);}
+
+/* ── HERO STATS — richer glass */
+.hero-stats{
+  background:linear-gradient(135deg,rgba(255,255,255,0.025),rgba(232,197,71,0.015))!important;
+  border:1px solid rgba(232,197,71,0.12)!important;
+  box-shadow:0 0 60px rgba(232,197,71,0.06),0 20px 60px rgba(0,0,0,0.4),inset 0 1px 0 rgba(232,197,71,0.08)!important;
+}
+.hero-stat .num{text-shadow:0 0 40px rgba(232,197,71,0.7),0 0 80px rgba(232,197,71,0.25)!important;}
+
+/* ── BUTTONS — more dramatic glow */
+.btn-gold{
+  box-shadow:0 14px 55px rgba(232,197,71,0.42),0 2px 10px rgba(0,0,0,0.6),inset 0 1px 0 rgba(255,255,255,0.35),0 0 0 1px rgba(232,197,71,0.2)!important;
+  text-shadow:0 1px 2px rgba(0,0,0,0.2);
+  position:relative;overflow:hidden;
+}
+.btn-gold::after{content:'';position:absolute;inset:0;background:linear-gradient(105deg,rgba(255,255,255,0.18) 0%,transparent 50%);pointer-events:none;border-radius:inherit;}
+.btn-gold:hover{box-shadow:0 32px 90px rgba(232,197,71,0.7),0 4px 22px rgba(0,0,0,0.5),inset 0 1px 0 rgba(255,255,255,0.35)!important;}
+
+/* ── TICKER — more cinematic */
+.ticker{background:linear-gradient(90deg,rgba(2,1,10,0.85),rgba(8,4,20,0.9),rgba(2,1,10,0.85))!important;border-top:1px solid rgba(232,197,71,0.08)!important;border-bottom:1px solid rgba(232,197,71,0.08)!important;}
+.ticker-item b{text-shadow:0 0 20px rgba(232,197,71,0.6)!important;}
+
+/* ── SECTION HEADINGS — richer */
+.sh em{text-shadow:0 0 50px rgba(232,197,71,0.45),0 0 100px rgba(232,197,71,0.15)!important;}
+
+/* ── STEP NUMBERS — more jewel-like */
+.step-num{
+  background:linear-gradient(135deg,rgba(232,197,71,0.1),rgba(200,150,30,0.04))!important;
+  border:1px solid rgba(232,197,71,0.4)!important;
+  box-shadow:0 0 30px rgba(232,197,71,0.18),inset 0 1px 0 rgba(255,255,255,0.08)!important;
+}
+
+/* ── CARDS — deeper, richer surfaces */
+.cat,.wall-card,.feat,.price-card,.testi-card,.faq-item,.leader-card,.trend-card{
+  box-shadow:0 4px 24px rgba(0,0,0,0.4),inset 0 1px 0 rgba(255,255,255,0.02);
+}
+.cat:hover,.wall-card:hover,.feat:hover,.price-card:hover,.testi-card:hover{
+  box-shadow:0 30px 90px rgba(0,0,0,0.8),0 0 60px rgba(232,197,71,0.08),inset 0 1px 0 rgba(255,255,255,0.03)!important;
+}
+
+/* NEW: Section dividers — more luminous */
+.divider{
+  background:linear-gradient(90deg,transparent,rgba(232,197,71,0.14),rgba(255,220,100,0.06),rgba(232,197,71,0.14),transparent)!important;
+  height:1px!important;
+  position:relative;
+}
+.divider::after{
+  content:'✦';
+  position:absolute;
+  left:50%;top:50%;transform:translate(-50%,-50%);
+  color:rgba(232,197,71,0.3);font-size:8px;
+  text-shadow:0 0 12px rgba(232,197,71,0.6);
+  background:var(--ink);
+  padding:0 12px;
+}
+
+/* ── DEMO BOX — more premium */
+.demo-box{
+  background:linear-gradient(145deg,rgba(10,8,22,0.98),rgba(6,4,16,0.99))!important;
+  border:1px solid rgba(232,197,71,0.14)!important;
+  box-shadow:0 40px 120px rgba(0,0,0,0.7),0 0 80px rgba(232,197,71,0.05)!important;
+}
+.demo-box::before{height:2px!important;background:linear-gradient(90deg,transparent,var(--accent2),var(--accent),var(--accent2),transparent)!important;opacity:0.7;}
+.demo-btn{
+  background:linear-gradient(135deg,var(--accent) 0%,var(--accent2) 40%,#FFE88A 55%,var(--accent2) 70%,var(--accent3) 100%)!important;
+  box-shadow:0 12px 50px rgba(232,197,71,0.32),inset 0 1px 0 rgba(255,255,255,0.3)!important;
+}
+
+/* ── PRICING — featured card glows more */
+.price-card.featured{
+  box-shadow:0 0 0 1px rgba(232,197,71,0.2),0 40px 120px rgba(0,0,0,0.8),0 0 100px rgba(232,197,71,0.08)!important;
+}
+.price-amount{text-shadow:0 0 60px rgba(232,197,71,0.5),0 0 120px rgba(232,197,71,0.15)!important;}
+
+/* ── TESTIMONIALS — richer quote mark */
+.testi-card::before{font-size:200px!important;color:rgba(232,197,71,0.055)!important;}
+
+/* ── CTA SECTION — most dramatic on the page */
+.cta-inner{
+  background:linear-gradient(160deg,#1E1830 0%,#0E0A1E 40%,#06040F 100%)!important;
+  border:1px solid rgba(232,197,71,0.22)!important;
+  box-shadow:0 80px 200px rgba(0,0,0,0.9),0 0 0 1px rgba(232,197,71,0.06),inset 0 1px 0 rgba(232,197,71,0.1)!important;
+}
+.cta-inner::after{background:radial-gradient(ellipse 80% 60% at 50% 0%,rgba(232,197,71,0.12),transparent)!important;}
+.cta-inner h2 em{text-shadow:0 0 60px rgba(232,197,71,0.8),0 0 120px rgba(232,197,71,0.3)!important;}
+.cta-btn{
+  box-shadow:0 20px 80px rgba(232,197,71,0.5),0 4px 20px rgba(0,0,0,0.5),inset 0 2px 0 rgba(255,255,255,0.3)!important;
+  padding:30px 72px!important;
+  font-size:19px!important;
+}
+.cta-btn:hover{box-shadow:0 40px 120px rgba(232,197,71,0.75),0 6px 30px rgba(0,0,0,0.4)!important;}
+
+/* NEW: Section tag — more refined */
+.tag{
+  background:linear-gradient(90deg,rgba(232,197,71,0.08),transparent);
+  padding:6px 14px 6px 0;
+  border-radius:4px;
+}
+
+/* ── FOOTER LOGO — blazing */
+.footer-logo{text-shadow:0 0 50px rgba(232,197,71,0.8),0 0 100px rgba(232,197,71,0.35),0 0 180px rgba(232,197,71,0.1)!important;}
+
+/* ── MOUSE GLOW — bigger, more majestic */
+#mglow{
+  width:1100px!important;height:1100px!important;
+  background:radial-gradient(circle,rgba(232,197,71,0.055) 0%,rgba(232,197,71,0.02) 40%,transparent 68%)!important;
+}
+
+/* ── WALL CARDS — richer quote mark */
+.wall-card::after{font-size:180px!important;color:rgba(232,197,71,0.055)!important;}
+
+/* NEW: Feature icon — glowing */
+.feat-icon{
+  background:linear-gradient(145deg,rgba(232,197,71,0.09),rgba(200,150,30,0.03))!important;
+  border:1px solid rgba(232,197,71,0.18)!important;
+  box-shadow:0 0 24px rgba(232,197,71,0.1),inset 0 1px 0 rgba(255,255,255,0.05)!important;
+  font-size:26px!important;
+}
+
+/* ── MODAL — more cinematic */
+.modal{box-shadow:0 80px 160px rgba(0,0,0,0.95),0 0 100px rgba(232,197,71,0.08)!important;}
+.modal::before{height:2px!important;opacity:0.7;}
+.modal-logo{text-shadow:0 0 40px rgba(232,197,71,0.7),0 0 80px rgba(232,197,71,0.25)!important;}
+
+/* ── WALL AVATAR GLOW ── */
+.wall-avatar{box-shadow:0 0 40px rgba(232,197,71,0.35),0 0 80px rgba(232,197,71,0.1)!important;}
+
+/* ── PRICE BADGE — gleaming */
+.price-badge{box-shadow:0 4px 30px rgba(232,197,71,0.5),inset 0 1px 0 rgba(255,255,255,0.25)!important;}
+
+/* Leader gold rank — more blazing */
+.leader-rank.gold{text-shadow:0 0 40px rgba(232,197,71,0.8),0 0 80px rgba(232,197,71,0.3)!important;}
+
+</style>
+</head>
+<body>
+
+<!-- Background layers — static, painterly -->
+<div class="bg">
+  <div class="bg-layer1"></div>
+  <div class="bg-layer2"></div>
+  <div class="bg-layer3"></div>
+  <div class="bg-layer4"></div>
+  <div class="bg-layer5"></div>
+  <div class="bg-stars"></div>
+  <div class="bg-grain"></div>
+  <div class="bg-nebula"></div>
+  <div class="bg-vignette"></div>
+  <div class="bg-shaft"></div>
+  <div class="bg-dust" id="bg-dust"></div>
+</div>
+
+<!-- Mouse glow -->
+<div id="mglow"></div>
+
+<!-- Custom cursor -->
+<div id="cur"></div>
+<div id="cur-ring"></div>
+
+<div class="toast" id="toast"></div>
+
+<nav>
+  <div class="logo" onclick="window.scrollTo({top:0,behavior:'smooth'})">YES!</div>
+  <div class="nav-right">
+    <button class="nav-signin" onclick="openModal('login')">Sign In</button>
+    <button class="nav-cta" onclick="openModal('signup')">Start Free</button>
+  </div>
+</nav>
+
+<section class="hero">
+  <div class="orbit4"></div>
+  <div class="orbit1"></div>
+  <div class="orbit2"></div>
+  <div class="orbit3"></div>
+  <div class="hero-badge"><div class="badge-dot"></div>AI · Story · Cinema · You</div>
+  <h1>
+    <span class="l1">Every life has</span>
+    <span class="l2">a story</span>
+    <span class="l3">worth telling.</span>
+  </h1>
+  <div class="hero-rule" id="hero-rule"></div>
+  <p class="hero-sub">Turn your experience into a powerful cinematic video in 60 seconds. No skills. No equipment. Just your story.</p>
+  <div class="hero-btns">
+    <button class="btn-gold" onclick="openModal('signup')">✦ Tell My Story — It's Free</button>
+    <button class="btn-ghost" onclick="document.getElementById('how').scrollIntoView({behavior:'smooth'})">See How It Works ↓</button>
+  </div>
+  <div class="hero-stats">
+    <div class="hero-stat"><span class="num" id="story-count">21,547</span><span class="lbl">Stories Told</span></div>
+    <div class="hero-stat"><span class="num">60s</span><span class="lbl">To Create</span></div>
+    <div class="hero-stat"><span class="num">16+</span><span class="lbl">Categories</span></div>
+  </div>
+</section>
+
+<div class="ticker"><div class="ticker-inner">
+  <span class="ticker-item"><b>Personal Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Life Lesson<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Faith Journey</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Recovery Story<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Family Memory</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Business Journey<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Love Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Health Journey<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Travel Adventure</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Sports Achievement<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Motivation</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Comedy & Fun<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Pet Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Overcoming Hardship<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Music & Art</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Culture & History<span style="opacity:0.2">✦</span></span>
+  <span class="ticker-item"><b>Personal Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Life Lesson<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Faith Journey</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Recovery Story<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Family Memory</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Business Journey<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Love Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Health Journey<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Travel Adventure</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Sports Achievement<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Motivation</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Comedy & Fun<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Pet Story</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Overcoming Hardship<span style="opacity:0.2">✦</span></span><span class="ticker-item"><b>Music & Art</b><span style="opacity:0.2">✦</span></span><span class="ticker-item">Culture & History<span style="opacity:0.2">✦</span></span>
+</div></div>
+
+<section class="section" id="how">
+  <div class="tag">How It Works</div>
+  <h2 class="sh">Three steps.<br><em>One powerful film.</em></h2>
+  <p class="sp">No editing. No experience. Just your story — and YES! does the rest.</p>
+  <div class="steps">
+    <div class="step"><div class="step-line"><div class="step-num">1</div><div class="step-connector"></div></div><div class="step-body"><h3>Tell Your Story</h3><p>Type your experience in your own words. A few sentences is all you need. YES! understands the emotion behind every word.</p></div></div>
+    <div class="step"><div class="step-line"><div class="step-num">2</div><div class="step-connector"></div></div><div class="step-body"><h3>AI Finds the Power</h3><p>YES! finds the most powerful angle — the version that will stop people mid-scroll and make them feel something real.</p></div></div>
+    <div class="step"><div class="step-line"><div class="step-num">3</div></div><div class="step-body"><h3>Your Film is Born</h3><p>A cinematic video built automatically — ready to download and share to TikTok, Instagram Reels, and YouTube Shorts in one tap.</p></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Story Categories</div>
+  <h2 class="sh">Every story.<br><em>Every human.</em></h2>
+  <p class="sp">YES! is built for all of humanity — every background, every belief, every life. If you lived it, it belongs here.</p>
+  <div class="cats">
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🙏</div><div class="cat-name">Faith & Spiritual</div><div class="cat-desc">Testimonies, prayer, miracles</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">💪</div><div class="cat-name">Overcoming</div><div class="cat-desc">Hardship, struggle, survival</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">👨‍👩‍👧</div><div class="cat-name">Family Memory</div><div class="cat-desc">Moments that shaped you</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🚀</div><div class="cat-name">Motivation</div><div class="cat-desc">Inspire others to rise</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">💼</div><div class="cat-name">Business Story</div><div class="cat-desc">Your entrepreneurial journey</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🌍</div><div class="cat-name">Culture & History</div><div class="cat-desc">Stories the world must hear</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🎓</div><div class="cat-name">Life Lesson</div><div class="cat-desc">Wisdom from experience</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🎬</div><div class="cat-name">Documentary</div><div class="cat-desc">Short-form true stories</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">💔</div><div class="cat-name">Love & Relationships</div><div class="cat-desc">Romance, heartbreak, connection</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🌿</div><div class="cat-name">Health Journey</div><div class="cat-desc">Healing, wellness, resilience</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">✈️</div><div class="cat-name">Travel & Adventure</div><div class="cat-desc">Places, people, discoveries</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🏆</div><div class="cat-name">Sports & Achievement</div><div class="cat-desc">Victory, training, sacrifice</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🎵</div><div class="cat-name">Music & Art</div><div class="cat-desc">Creative journeys & expression</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🐾</div><div class="cat-name">Pet & Animal Stories</div><div class="cat-desc">The animals that changed us</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">😂</div><div class="cat-name">Comedy & Fun</div><div class="cat-desc">Make the world laugh</div></div>
+    <div class="cat" onclick="openModal('signup')"><div class="cat-icon">🍳</div><div class="cat-name">Food & Culture</div><div class="cat-desc">Recipes, roots, traditions</div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Try It Live</div>
+  <h2 class="sh">See the magic<br><em>right now.</em></h2>
+  <p class="sp">Type any story topic and watch YES! find your most powerful angles — instantly.</p>
+  <div class="demo-box">
+    <div class="demo-label">Your story is about...</div>
+    <textarea class="demo-input" id="demo-input" placeholder="e.g. I lost everything at 30 and rebuilt my life from nothing..." rows="3"></textarea>
+    <div class="loading" id="demo-loading">✦ Finding your story angles...</div>
+    <div class="angles-title" id="angles-title">Your High-Impact Story Angles ✦</div>
+    <div class="angles" id="angles"></div>
+    <button class="demo-btn" onclick="findAngles()">✦ Find My Story Angles</button>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="wall-section">
+  <div class="tag">Story Wall</div>
+  <h2 class="sh">Real stories.<br><em>Real people.</em></h2>
+  <p class="sp">Every story on YES! is a life worth celebrating. This is your community.</p>
+  <div class="wall-grid">
+    <div class="wall-card"><div class="wall-card-top"><div class="wall-avatar">🙏</div><div><div class="wall-name">Anonymous</div><div class="wall-type">Faith & Spiritual</div></div></div><div class="wall-quote">"I doubted everything — and then God showed up in a way I never expected. My story is proof that nothing is impossible."</div><div class="wall-actions"><div class="wall-action">🎬 Watch Film</div><div class="wall-action">💛 This moved me</div><div class="wall-action" onclick="openShareModal()">↗ Share</div></div></div>
+    <div class="wall-card"><div class="wall-card-top"><div class="wall-avatar">💪</div><div><div class="wall-name">Anonymous</div><div class="wall-type">Overcoming Hardship</div></div></div><div class="wall-quote">"I was homeless at 22. Today I run a company. The middle part of my story is what YES! helped me finally tell."</div><div class="wall-actions"><div class="wall-action">🎬 Watch Film</div><div class="wall-action">💛 This moved me</div><div class="wall-action" onclick="openShareModal()">↗ Share</div></div></div>
+    <div class="wall-card"><div class="wall-card-top"><div class="wall-avatar">🐾</div><div><div class="wall-name">Anonymous</div><div class="wall-type">Pet & Animal Stories</div></div></div><div class="wall-quote">"My dog saved my life during my darkest year. I never knew how to say it until YES! helped me find the words."</div><div class="wall-actions"><div class="wall-action">🎬 Watch Film</div><div class="wall-action">💛 This moved me</div><div class="wall-action" onclick="openShareModal()">↗ Share</div></div></div>
+    <div class="wall-card"><div class="wall-card-top"><div class="wall-avatar">✈️</div><div><div class="wall-name">Anonymous</div><div class="wall-type">Travel & Adventure</div></div></div><div class="wall-quote">"I sold everything and moved to a country where I knew no one. That decision gave me back my life."</div><div class="wall-actions"><div class="wall-action">🎬 Watch Film</div><div class="wall-action">💛 This moved me</div><div class="wall-action" onclick="openShareModal()">↗ Share</div></div></div>
+  </div>
+  <div style="margin-top:34px;background:rgba(232,197,71,0.032);border:1px solid rgba(232,197,71,0.09);border-radius:26px;padding:30px 26px;text-align:center;">
+    <div style="font-size:13px;color:var(--muted2);margin-bottom:12px;font-weight:300;">Join <b style="color:var(--accent)">21,547</b> storytellers already on YES!</div>
+    <button class="btn-gold" style="padding:17px 44px;font-size:15px;" onclick="openModal('signup')">✦ Add Your Story</button>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Platform Features</div>
+  <h2 class="sh">Built different.<br><em>Built for you.</em></h2>
+  <p class="sp">YES! is not a video editor. It is a story creation engine unlike anything that exists.</p>
+  <div class="feats">
+    <div class="feat"><div class="feat-icon">🎬</div><div class="feat-body"><h3>Cinematic Video Generation</h3><p>Your story becomes a real AI-generated cinematic film. Not a slideshow. Not a template. A real film.</p><span class="feat-live">Live Now</span></div></div>
+    <div class="feat"><div class="feat-icon">🔐</div><div class="feat-body"><h3>Your API Key — Vault Protected</h3><p>Your API keys are locked in a military-grade vault. No one can ever see, steal or use them. Ever.</p><span class="feat-live">Live Now</span></div></div>
+    <div class="feat"><div class="feat-icon">📱</div><div class="feat-body"><h3>Download & Share Instantly</h3><p>Download your video straight to your phone. Share to TikTok, Instagram, YouTube Shorts in one tap.</p><span class="feat-live">Live Now</span></div></div>
+    <div class="feat"><div class="feat-icon">🌍</div><div class="feat-body"><h3>Story Wall — Global Community</h3><p>Your story joins a global wall of human experience. Inspire strangers. Change lives. Leave a legacy.</p><span class="feat-live">Live Now</span></div></div>
+    <div class="feat"><div class="feat-icon">🎙️</div><div class="feat-body"><h3>Voice Story Mode</h3><p>Just talk. YES! converts your voice into a script, visuals and a finished cinematic film automatically.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">📖</div><div class="feat-body"><h3>Story to PDF Book</h3><p>Turn your story into a beautifully formatted PDF book. Your life. Your words. Your legacy in print.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">🏆</div><div class="feat-body"><h3>Story of the Week</h3><p>Every week the YES! community votes on the most powerful story. Winners get featured to the world.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">💌</div><div class="feat-body"><h3>Send a Story as a Gift</h3><p>Create a cinematic video for someone you love and send it as the most meaningful gift they will ever receive.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">🔁</div><div class="feat-body"><h3>Multi-Video Generation</h3><p>One story generates 5 videos — a full week of content ready for every platform in one single tap.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">💬</div><div class="feat-body"><h3>Comments & Reactions</h3><p>Let the world respond to your story. Real reactions from real people who felt what you shared.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">👥</div><div class="feat-body"><h3>Follow Storytellers</h3><p>Follow the voices that move you. Build your audience. Grow your community of people who need your story.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">💰</div><div class="feat-body"><h3>Tips & Creator Earnings</h3><p>Let your audience tip you for your story. Your words have value. YES! helps you earn from them.</p><span class="feat-soon">Coming Soon</span></div></div>
+    <div class="feat"><div class="feat-icon">📺</div><div class="feat-body"><h3>Story Series</h3><p>Tell your story in episodes. Multi-part cinematic series that keep your audience coming back for more.</p><span class="feat-soon">Coming Soon</span></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Trending This Week</div>
+  <h2 class="sh">The stories<br><em>moving the world.</em></h2>
+  <p class="sp">Every week the YES! community crowns the most powerful story. Could yours be next?</p>
+  <div class="trend-card" style="border-color:rgba(232,197,71,0.26);"><div class="trend-rank" style="color:var(--accent);text-shadow:0 0 24px rgba(232,197,71,0.5);">1</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:5px;">I rebuilt my life at 47 — the year everyone said was too late</div><div style="font-size:11px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;">Overcoming · 🔥 4,201 views</div></div><div style="font-size:26px;">🏆</div></div>
+  <div class="trend-card"><div class="trend-rank" style="color:var(--muted2);">2</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:5px;">My dog was the only reason I stayed alive that winter</div><div style="font-size:11px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;">Pet Story · 3,847 views</div></div></div>
+  <div class="trend-card"><div class="trend-rank" style="color:var(--muted2);">3</div><div style="flex:1;"><div style="font-size:14px;font-weight:600;color:var(--white);margin-bottom:5px;">I quit my $200K job to sell food from my culture — here's what happened</div><div style="font-size:11px;color:var(--accent);letter-spacing:1.5px;text-transform:uppercase;">Business · 3,102 views</div></div></div>
+  <div style="text-align:center;margin-top:30px;"><button class="btn-ghost" style="padding:15px 38px;" onclick="openModal('signup')">See All Trending Stories →</button></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Top Storytellers</div>
+  <h2 class="sh">This month's<br><em>leaderboard.</em></h2>
+  <p class="sp">The YES! community's most powerful voices. Every month a new champion rises. Will it be you?</p>
+  <div class="leader-card"><div class="leader-rank gold">1</div><div class="leader-avatar" style="background:linear-gradient(135deg,#E8C547,#F5D76E);">💪</div><div class="leader-info"><div class="leader-name">Marcus T.</div><div class="leader-meta">Overcoming · 12 stories this month</div></div><div><div class="leader-score">48.2K</div><div class="leader-score-label">Views</div></div></div>
+  <div class="leader-card"><div class="leader-rank silver">2</div><div class="leader-avatar" style="background:linear-gradient(135deg,#6B6578,#9B94A8);">🙏</div><div class="leader-info"><div class="leader-name">Sarah M.</div><div class="leader-meta">Faith & Spiritual · 9 stories this month</div></div><div><div class="leader-score">31.7K</div><div class="leader-score-label">Views</div></div></div>
+  <div class="leader-card"><div class="leader-rank bronze">3</div><div class="leader-avatar" style="background:linear-gradient(135deg,#C87B4A,#E89B6A);">💼</div><div class="leader-info"><div class="leader-name">Priya K.</div><div class="leader-meta">Business · 7 stories this month</div></div><div><div class="leader-score">24.1K</div><div class="leader-score-label">Views</div></div></div>
+  <div class="leader-card"><div class="leader-rank other">4</div><div class="leader-avatar" style="background:rgba(255,255,255,0.045);">✈️</div><div class="leader-info"><div class="leader-name">James O.</div><div class="leader-meta">Travel & Adventure · 5 stories this month</div></div><div><div class="leader-score">18.9K</div><div class="leader-score-label">Views</div></div></div>
+  <div class="leader-card"><div class="leader-rank other">5</div><div class="leader-avatar" style="background:rgba(255,255,255,0.045);">🌿</div><div class="leader-info"><div class="leader-name">Elena R.</div><div class="leader-meta">Health Journey · 8 stories this month</div></div><div><div class="leader-score">15.3K</div><div class="leader-score-label">Views</div></div></div>
+  <div style="text-align:center;margin-top:30px;"><button class="btn-gold" style="padding:17px 44px;font-size:15px;" onclick="openModal('signup')">✦ Join the Leaderboard</button></div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Pricing</div>
+  <h2 class="sh">Start free.<br><em>Scale when ready.</em></h2>
+  <p class="sp">3 free videos. No card needed. Then choose the plan that fits your story.</p>
+  <div class="free-banner"><div class="free-banner-icon">🎬</div><div><h3>3 FREE Videos on Signup</h3><p>No credit card. No catch. Just create your first three films completely free.</p></div></div>
+  <div class="pricing-grid">
+    <div class="price-card"><div class="price-name">🌱 Starter</div><div class="price-amount">$9.99<span>/mo CAD</span></div><div class="price-desc">Perfect for personal storytellers</div><ul class="price-features"><li>5 cinematic videos per month</li><li>Download to your phone</li><li>Share to all social platforms</li><li>Story Wall access</li><li>All story categories</li></ul><button class="price-btn ghost" onclick="openModal('signup')">Get Started →</button></div>
+    <div class="price-card featured"><div class="price-badge">Most Popular</div><div class="price-name">🎬 Creator</div><div class="price-amount">$29.99<span>/mo CAD</span></div><div class="price-desc">For serious content creators</div><ul class="price-features"><li>20 cinematic videos per month</li><li>Download to your phone</li><li>Share to all social platforms</li><li>Story Wall featured placement</li><li>Priority video generation</li><li>Story of the Week eligible</li></ul><button class="price-btn" onclick="openModal('signup')">Get Started →</button></div>
+    <div class="price-card"><div class="price-name">🔥 Pro</div><div class="price-amount">$59.99<span>/mo CAD</span></div><div class="price-desc">Unlimited storytelling power</div><ul class="price-features"><li>Unlimited videos every month</li><li>Download to your phone</li><li>Share to all social platforms</li><li>Top Story Wall placement</li><li>Fastest video generation</li><li>Story of the Week eligible</li><li>Gift video sending</li><li>Early access to all new features</li></ul><button class="price-btn" onclick="openModal('signup')">Get Started →</button></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">What People Are Saying</div>
+  <h2 class="sh">Stories that<br><em>changed lives.</em></h2>
+  <p class="sp">Real people. Real stories. Real films. Here's what early YES! users are saying.</p>
+  <div class="testi-grid">
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><div class="testi-quote">"I have been trying to tell my recovery story for 10 years. YES! turned it into a film in 60 seconds. I watched it and cried. My family finally understood what I went through."</div><div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#4CC98A,#2A8A5A);">💪</div><div><div class="testi-name">David M.</div><div class="testi-type">Recovery Story · Toronto, Canada</div></div></div></div>
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><div class="testi-quote">"My grandmother passed last year and I had all these memories I could never put into words. YES! helped me create a film for her. My whole family was in tears. Nothing has ever meant more to me."</div><div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#E8C547,#C89A2A);">👨‍👩‍👧</div><div><div class="testi-name">Aisha K.</div><div class="testi-type">Family Memory · Vancouver, Canada</div></div></div></div>
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><div class="testi-quote">"I posted my YES! video to TikTok and it got 400,000 views in 3 days. People were commenting saying it changed their life. I built a business for 8 years — YES! told that story better than I ever could."</div><div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#9B6EE8,#6A3AC8);">💼</div><div><div class="testi-name">Marcus T.</div><div class="testi-type">Business Story · Calgary, Canada</div></div></div></div>
+    <div class="testi-card"><div class="testi-stars">★★★★★</div><div class="testi-quote">"I am 67 years old and not good with technology. YES! was so simple even I could do it. I made a film about my faith journey and sent it to my children. My son called me crying. Worth every penny."</div><div class="testi-author"><div class="testi-avatar" style="background:linear-gradient(135deg,#E87B4A,#C85A2A);">🙏</div><div><div class="testi-name">Margaret O.</div><div class="testi-type">Faith & Spiritual · Edmonton, Canada</div></div></div></div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<section class="section">
+  <div class="tag">Questions Answered</div>
+  <h2 class="sh">Everything you<br><em>need to know.</em></h2>
+  <p class="sp">No surprises. No fine print. Just honest answers.</p>
+  <div class="faq-list">
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is it really free to start? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Yes — completely free. You get 3 full cinematic videos the moment you sign up. No credit card needed. No catch. We want you to experience YES! before you ever spend a dollar.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Do I need any video or tech skills? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Zero. If you can type a few sentences on your phone, you can create a cinematic film with YES! Our AI handles everything — the script, the visuals, the music, the editing. You just tell your story.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Who owns my story and my video? <span class="faq-arrow">+</span></div><div class="faq-a"><p>You do. Always. Your story is yours. YES! never sells, shares or uses your content without your permission. You can delete your stories at any time.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Does it work on my phone? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Yes — YES! works on any phone, tablet or computer. No app download needed. Just open your browser and go. Designed mobile-first so it feels beautiful on your screen.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I share my video to TikTok and Instagram? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Absolutely — once your video is created you can share directly to TikTok, Instagram Reels, YouTube Shorts, Facebook, WhatsApp and more in one tap. The caption is written for you automatically.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">What happens after my 3 free videos? <span class="faq-arrow">+</span></div><div class="faq-a"><p>After your 3 free videos you can choose a plan starting at just $9.99/month CAD. There's no pressure and no automatic charge. You decide when and if you want to upgrade.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Is my story private or does everyone see it? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Your choice entirely. Your videos are private by default — only you can see them. You decide if and when to share to the Story Wall or to social media. Nothing is ever posted without your action.</p></div></div>
+    <div class="faq-item"><div class="faq-q" onclick="toggleFaq(this)">Can I cancel my subscription anytime? <span class="faq-arrow">+</span></div><div class="faq-a"><p>Yes — cancel anytime, instantly, with no fees or penalties. We believe in earning your loyalty every single month — not trapping you in a contract.</p></div></div>
+  </div>
+</section>
+
+<section class="cta-section">
+  <div class="cta-inner">
+    <div class="cta-deco cta-deco-l">✦</div>
+    <div class="cta-deco cta-deco-r">✦</div>
+    <h2>Your story<br>deserves to be <em>felt.</em></h2>
+    <p>Millions of people are waiting to be moved by what you have been through. Your story matters. Tell it today.</p>
+    <button class="cta-btn" onclick="openModal('signup')">✦ Tell My Story — It's Free</button>
+    <div class="mobile-banner"><b>📱 Works on any device</b> — no download needed · iOS · Android · Desktop</div>
+  </div>
+</section>
+
+<footer>
+  <div class="footer-logo">YES!</div>
+  <p>Every life has a story worth telling.</p>
+  <div class="footer-links">
+    <a href="create.html">Create Video</a>
+    <a href="privacy.html">Privacy Policy</a>
+    <a href="/cdn-cgi/l/email-protection#224a474e4e4d625b47510f524e4356444d504f0c414d4f">Contact</a>
+  </div>
+  <p style="margin-top:16px;font-size:11px;opacity:0.35;">© 2026 YES! Platform. Built for every human story on earth. 🌍</p>
+</footer>
+
+<div class="share-modal-overlay" id="share-modal-overlay">
+  <div class="share-modal">
+    <div class="share-handle"></div>
+    <div class="share-title">Share Your Story 🎬</div>
+    <div class="share-sub">Every share brings new storytellers to YES! — and spreads your story to the world.</div>
+    <div class="share-caption"><span class="share-caption-label">✦ Auto-Caption</span><span>I just turned my story into a film with YES! 🎬 Every life has a story worth telling. Try it free 👉 yes-platform.com</span><button class="share-copy-btn" onclick="copyCaption()">COPY</button></div>
+    <div class="share-grid">
+      <div class="share-btn" onclick="shareToApp('tiktok')"><div class="share-btn-icon">🎵</div><div class="share-btn-label">TikTok</div></div>
+      <div class="share-btn" onclick="shareToApp('instagram')"><div class="share-btn-icon">📸</div><div class="share-btn-label">Instagram</div></div>
+      <div class="share-btn" onclick="shareToApp('youtube')"><div class="share-btn-icon">▶️</div><div class="share-btn-label">YouTube</div></div>
+      <div class="share-btn" onclick="shareToApp('facebook')"><div class="share-btn-icon">👤</div><div class="share-btn-label">Facebook</div></div>
+      <div class="share-btn" onclick="shareToApp('x')"><div class="share-btn-icon">🐦</div><div class="share-btn-label">X</div></div>
+      <div class="share-btn" onclick="shareToApp('whatsapp')"><div class="share-btn-icon">💬</div><div class="share-btn-label">WhatsApp</div></div>
+      <div class="share-btn" onclick="shareToApp('sms')"><div class="share-btn-icon">📲</div><div class="share-btn-label">Messages</div></div>
+      <div class="share-btn" onclick="shareNative()"><div class="share-btn-icon">⬆️</div><div class="share-btn-label">More</div></div>
+    </div>
+    <button class="share-close" onclick="closeShareModal()">Close</button>
+  </div>
+</div>
+
+<div class="modal-overlay" id="modal-overlay">
+  <div class="modal">
+    <button class="modal-x" onclick="closeModal()">✕</button>
+    <div class="modal-logo">YES!</div>
+    <div class="modal-tagline">Every life has a story worth telling</div>
+    <div id="modal-login-view" style="display:none;">
+      <div class="modal-title">Welcome back</div>
+      <div class="modal-sub">Sign in to continue your story.</div>
+      <div class="auth-error" id="login-error"></div>
+      <input class="auth-input" type="email" id="login-email" placeholder="Your email address">
+      <input class="auth-input" type="password" id="login-password" placeholder="Your password">
+      <div style="text-align:right;margin-top:-4px;margin-bottom:14px;"><a onclick="switchToForgot()" style="font-size:13px;color:var(--muted2);cursor:pointer;text-decoration:none;">Forgot password?</a></div>
+      <button class="auth-btn" onclick="signIn()">Sign In →</button>
+      <div class="auth-switch">No account? <a onclick="switchToSignup()">Create one free</a></div>
+    </div>
+    <div id="modal-forgot-view" style="display:none;">
+      <div class="modal-title">Reset Password</div>
+      <div class="modal-sub">Enter your email and we'll send you a reset link.</div>
+      <div class="auth-error" id="forgot-error"></div>
+      <div class="auth-error" id="forgot-success" style="background:rgba(76,201,138,0.07);border-color:rgba(76,201,138,0.22);color:var(--green);"></div>
+      <input class="auth-input" type="email" id="forgot-email" placeholder="Your email address">
+      <button class="auth-btn" onclick="sendReset()">Send Reset Link →</button>
+      <div class="auth-switch"><a onclick="switchToLogin()">← Back to Sign In</a></div>
+    </div>
+    <div id="modal-signup-view">
+      <div class="modal-title">Start your story</div>
+      <div class="modal-sub">Create your free account and get 3 cinematic videos on us.</div>
+      <div class="free-badge"><div style="font-size:20px;">🎬</div><div class="free-badge-text">3 FREE videos — no card needed</div></div>
+      <div class="auth-error" id="signup-error"></div>
+      <input class="auth-input" type="email" id="signup-email" placeholder="Your email address">
+      <input class="auth-input" type="password" id="signup-password" placeholder="Create a password (6+ characters)">
+      <button class="auth-btn" onclick="signUp()">Create Free Account →</button>
+      <div class="auth-switch">Already have one? <a onclick="switchToLogin()">Sign in</a></div>
+    </div>
+    <div id="modal-verify-view" style="display:none;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">📬</div>
+      <div class="modal-title" style="text-align:center;">Check your email!</div>
+      <div class="modal-sub" style="text-align:center;">We sent you a confirmation link. Click it then come back and start creating!</div>
+      <button class="auth-btn" onclick="window.location.href='create.html'">Go to Create →</button>
+    </div>
+    <div id="modal-success-view" style="display:none;text-align:center;">
+      <div style="font-size:48px;margin-bottom:16px;">🎬</div>
+      <div class="modal-title" style="text-align:center;">Welcome to YES!</div>
+      <div class="modal-sub" style="text-align:center;">Your 3 free videos are waiting. Let's tell your story!</div>
+      <button class="auth-btn" onclick="window.location.href='create.html'">Start Creating →</button>
+    </div>
+  </div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+const SUPABASE_URL='https://gaqxxnpbdyuhqnuymwvx.supabase.co';
+const SUPABASE_KEY='sb_publishable_9Re17X2fK5AX9aSdN8KAJg_-A24dYj_';
+const sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+
+// Counter
+function animateCounter(el,target){
+  if(!el)return;
+  let c=target-400;
+  const s=()=>{if(c<target){c+=Math.ceil((target-c)/22);el.innerText=c.toLocaleString();requestAnimationFrame(s);}else el.innerText=target.toLocaleString();};
+  s();
+}
+window.addEventListener('load',()=>{
+  animateCounter(document.getElementById('story-count'),21547);
+  // Animate the hero rule line
+  setTimeout(()=>{const r=document.getElementById('hero-rule');if(r)r.classList.add('visible');},1200);
+});
+
+// Custom cursor
+(function(){
+  const cur=document.getElementById('cur'),ring=document.getElementById('cur-ring');
+  if(!cur||!ring)return;
+  let mx=0,my=0,rx=0,ry=0;
+  document.addEventListener('mousemove',e=>{mx=e.clientX;my=e.clientY;cur.style.left=mx+'px';cur.style.top=my+'px';});
+  (function ar(){rx+=(mx-rx)*0.1;ry+=(my-ry)*0.1;ring.style.left=rx+'px';ring.style.top=ry+'px';requestAnimationFrame(ar);})();
+  document.querySelectorAll('button,.cat,.wall-card,.testi-card,.feat,.price-card').forEach(el=>{
+    el.addEventListener('mouseenter',()=>{cur.style.width='14px';cur.style.height='14px';});
+    el.addEventListener('mouseleave',()=>{cur.style.width='7px';cur.style.height='7px';});
+  });
+})();
+
+// Mouse glow — very slow
+(function(){
+  const g=document.getElementById('mglow');
+  if(g)document.addEventListener('mousemove',e=>{g.style.left=e.clientX+'px';g.style.top=e.clientY+'px';});
+})();
+
+// Scroll reveal
+const ro=new IntersectionObserver((entries)=>{
+  entries.forEach((e,i)=>{if(e.isIntersecting){setTimeout(()=>e.target.classList.add('visible'),i*60);ro.unobserve(e.target);}});
+},{threshold:0.06});
+document.querySelectorAll('.wall-card,.cat,.feat,.price-card,.testi-card,.faq-item,.step,.leader-card,.trend-card').forEach(el=>{el.classList.add('reveal');ro.observe(el);});
+
+// Share
+const CAP="I just turned my story into a film with YES! 🎬 Every life has a story worth telling. Try it free 👉 yes-platform.com";
+function openShareModal(){document.getElementById('share-modal-overlay').classList.add('open');document.body.style.overflow='hidden';}
+function closeShareModal(){document.getElementById('share-modal-overlay').classList.remove('open');document.body.style.overflow='';}
+document.getElementById('share-modal-overlay').addEventListener('click',function(e){if(e.target===this)closeShareModal();});
+function copyCaption(){navigator.clipboard.writeText(CAP).then(()=>showToast('Caption copied! 🎬')).catch(()=>{});}
+function shareToApp(p){const t=encodeURIComponent(CAP);const u={tiktok:'https://www.tiktok.com/',instagram:'https://www.instagram.com/',youtube:'https://www.youtube.com/upload',facebook:`https://www.facebook.com/sharer/sharer.php?u=https://yes-platform.com&quote=${t}`,x:`https://twitter.com/intent/tweet?text=${t}`,whatsapp:`https://wa.me/?text=${t}`,sms:`sms:?body=${t}`};copyCaption();if(u[p])window.open(u[p],'_blank');}
+function shareNative(){if(navigator.share){navigator.share({title:'YES!',text:CAP,url:'https://yes-platform.com'}).catch(()=>{});}else{copyCaption();showToast('Caption copied! 🎬');}}
+
+// Toast
+function showToast(msg){const t=document.getElementById('toast');t.innerText=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),3500);}
+
+// FAQ
+function toggleFaq(el){const item=el.parentElement;const open=item.classList.contains('open');document.querySelectorAll('.faq-item').forEach(i=>i.classList.remove('open'));if(!open)item.classList.add('open');}
+
+// Auth
+function openModal(view){
+  document.getElementById('modal-overlay').classList.add('open');document.body.style.overflow='hidden';
+  document.getElementById('modal-login-view').style.display=view==='login'?'block':'none';
+  document.getElementById('modal-signup-view').style.display=view==='login'?'none':'block';
+  document.getElementById('modal-verify-view').style.display='none';
+  document.getElementById('modal-success-view').style.display='none';
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');document.body.style.overflow='';}
+function switchToLogin(){document.getElementById('modal-signup-view').style.display='none';document.getElementById('modal-login-view').style.display='block';}
+function switchToSignup(){document.getElementById('modal-login-view').style.display='none';document.getElementById('modal-signup-view').style.display='block';}
+function switchToForgot(){document.getElementById('modal-login-view').style.display='none';document.getElementById('modal-forgot-view').style.display='block';}
+async function sendReset(){
+  const email=document.getElementById('forgot-email').value.trim();
+  const err=document.getElementById('forgot-error');
+  const ok=document.getElementById('forgot-success');
+  err.classList.remove('show');ok.classList.remove('show');
+  if(!email){err.innerText='Please enter your email address.';err.classList.add('show');return;}
+  const{error}=await sb.auth.resetPasswordForEmail(email,{redirectTo:'https://yes-platform.vercel.app'});
+  if(error){err.innerText=error.message;err.classList.add('show');}
+  else{ok.innerText='✅ Reset link sent! Check your email.';ok.classList.add('show');}
+}
+document.getElementById('modal-overlay').addEventListener('click',function(e){if(e.target===this)closeModal();});
+
+async function signUp(){
+  const email=document.getElementById('signup-email').value.trim();
+  const pass=document.getElementById('signup-password').value;
+  const err=document.getElementById('signup-error');err.classList.remove('show');
+  if(!email||!pass){err.innerText='Please fill in both fields!';err.classList.add('show');return;}
+  if(pass.length<6){err.innerText='Password must be at least 6 characters.';err.classList.add('show');return;}
+  const{error}=await sb.auth.signUp({email,password:pass});
+  if(error){err.innerText=error.message;err.classList.add('show');}
+  else{document.getElementById('modal-signup-view').style.display='none';document.getElementById('modal-verify-view').style.display='block';}
+}
+async function signIn(){
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-password').value;
+  const err=document.getElementById('login-error');err.classList.remove('show');
+  if(!email||!pass){err.innerText='Please enter your email and password.';err.classList.add('show');return;}
+  const{error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){err.innerText=error.message;err.classList.add('show');}
+  else{document.getElementById('modal-login-view').style.display='none';document.getElementById('modal-success-view').style.display='block';}
+}
+
+// Angle finder
+const A={
+  default:["The moment that changed everything","What I learned when I had nothing left","The day I chose to keep going","How I found strength I didn't know I had"],
+  fear:["The night fear almost won — and what stopped it","How I stopped being afraid and started living","What I discovered on the other side of anxiety","I faced my biggest fear — here's what happened"],
+  loss:["How grief became my greatest teacher","What losing everything gave me","The day my world fell apart — and how I rebuilt","I lost what I loved most. Here's what remained."],
+  faith:["The moment faith became real for me","I doubted everything — and found something greater","What happened when I finally let go and trusted","From religion to relationship — my real story"],
+  addiction:["The day I chose life over the habit","How I broke free from what was destroying me","What nobody tells you about real recovery","I was trapped for years. Here's how I got out."],
+  business:["How I built something from absolutely nothing","The failure that became my greatest lesson","What I wish someone had told me starting out","From broke to building — my entrepreneurial truth"],
+  family:["The moment that defined our family forever","A memory I will carry for the rest of my life","What my family taught me that no school could","The story behind the people who made me who I am"],
+  motivation:["Why I refused to quit when everything said stop","The decision that rewired my entire life","What I found at the bottom that changed my direction","This is for everyone who's still in the middle of it"]
+};
+function getAngles(t){const s=t.toLowerCase();if(s.match(/fear|anxiety|afraid|worried|panic/))return A.fear;if(s.match(/loss|grief|died|death|lost/))return A.loss;if(s.match(/faith|god|pray|church|spiritual|jesus|believe/))return A.faith;if(s.match(/addict|drugs|alcohol|sober|recovery|clean/))return A.addiction;if(s.match(/business|startup|entrepren|money|broke|built/))return A.business;if(s.match(/family|mum|mom|dad|parent|child|kids|marriage/))return A.family;if(s.match(/motivat|inspire|quit|keep going|rise|success/))return A.motivation;return A.default;}
+function findAngles(){
+  const v=document.getElementById('demo-input').value.trim();
+  if(!v){showToast('Tell us what your story is about first!');return;}
+  const L=document.getElementById('demo-loading'),T=document.getElementById('angles-title'),C=document.getElementById('angles');
+  L.classList.add('show');T.style.display='none';C.innerHTML='';
+  setTimeout(()=>{L.classList.remove('show');const angles=getAngles(v);T.style.display='block';C.innerHTML='';angles.forEach(a=>{const d=document.createElement('div');d.className='angle';d.innerHTML=`<span style="font-style:italic;color:var(--offwhite);line-height:1.55'>${a}</span><span class="angle-arrow">→</span>`;d.onclick=()=>openModal('signup');C.appendChild(d);});},1200);
+}
+
+// Scatter static dust particles — painted in once, never animated
+(function(){
+  const dust = document.getElementById('bg-dust');
+  if(!dust) return;
+  const positions = [
+    [8,12],[14,28],[22,8],[31,45],[42,18],[53,6],[61,33],[74,15],[85,42],[93,9],
+    [7,58],[18,72],[29,65],[38,88],[47,52],[56,78],[66,61],[77,84],[89,70],[96,55],
+    [12,38],[24,52],[35,31],[44,68],[57,42],[68,24],[79,58],[88,36],[4,82],[97,78]
+  ];
+  let html = '';
+  positions.forEach(([x,y]) => {
+    const size = (Math.random() * 1.2 + 0.6).toFixed(1);
+    const op = (Math.random() * 0.4 + 0.2).toFixed(2);
+    html += `<div class="dust-p" style="left:${x}%;top:${y}%;width:${size}px;height:${size}px;opacity:${op};"></div>`;
+  });
+  dust.innerHTML = html;
+})();
+
+</script>
+</body>
+</html>
